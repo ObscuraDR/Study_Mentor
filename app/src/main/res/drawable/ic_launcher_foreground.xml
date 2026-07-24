@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Open book mark, centred inside the 72dp adaptive-icon safe zone. -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M28,38 L52,44 L52,74 L28,68 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M80,38 L56,44 L56,74 L80,68 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,32 m-4,0 a4,4 0 1,0 8,0 a4,4 0 1,0 -8,0" />
+</vector>

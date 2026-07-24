@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Study Mentor</string>
+
+    <!-- Authentication -->
+    <string name="auth_sign_in_subtitle">Sign in to continue your learning.</string>
+    <string name="auth_register_subtitle">Create an account to start learning.</string>
+    <string name="auth_field_name">Name</string>
+    <string name="auth_field_email">Email</string>
+    <string name="auth_field_password">Password</string>
+    <string name="auth_password_hint">At least 8 characters</string>
+    <string name="auth_action_sign_in">Sign in</string>
+    <string name="auth_action_register">Create account</string>
+    <string name="auth_switch_to_register">New here? Create an account</string>
+    <string name="auth_switch_to_sign_in">Already have an account? Sign in</string>
+
+    <!-- Authenticated shell sections -->
+    <string name="section_home">Home</string>
+    <string name="section_learn">Learn</string>
+    <string name="section_progress">Progress</string>
+    <string name="section_tutor">Tutor</string>
+    <string name="section_profile">Profile</string>
+
+    <!-- Home dashboard -->
+    <string name="home_greeting_returning">Welcome back!</string>
+    <string name="home_greeting_new">Welcome! Let\'s get started.</string>
+    <string name="home_subtitle_returning">Here\'s where things stand today.</string>
+    <string name="home_subtitle_new">Pick a lesson below whenever you\'re ready.</string>
+    <string name="home_continue_learning_heading">Continue learning</string>
+    <string name="home_flashcards_due_heading">Flashcards to review</string>
+    <string name="home_nothing_yet_title">Nothing new to show yet</string>
+    <string name="home_nothing_yet_body">Check back once new lessons are added to your course.</string>
+
+    <!-- Learning catalog -->
+    <string name="catalog_subjects_title">Subjects</string>
+    <string name="catalog_topics_title">Topics</string>
+    <string name="catalog_lessons_title">Lessons</string>
+    <string name="catalog_lesson_title">Lesson</string>
+    <string name="catalog_subjects_context">Choose a subject to start learning.</string>
+    <string name="catalog_topics_context">Pick a topic to continue.</string>
+    <string name="catalog_lessons_context">Lessons are ordered by your course.</string>
+    <string name="catalog_subjects_empty_title">No subjects yet</string>
+    <string name="catalog_subjects_empty_body">There is nothing to study here at the moment.</string>
+    <string name="catalog_topics_empty_title">No topics yet</string>
+    <string name="catalog_topics_empty_body">This subject has no topics available.</string>
+    <string name="catalog_lessons_empty_title">No lessons yet</string>
+    <string name="catalog_lessons_empty_body">This topic has no lessons available.</string>
+    <string name="catalog_showing_saved_copy">Showing a saved copy. Connect to see the latest.</string>
+    <string name="catalog_not_found_title">Not available</string>
+    <string name="catalog_not_found_body">This content is no longer available.</string>
+    <string name="catalog_unauthorized_title">Session ended</string>
+    <string name="catalog_unauthorized_body">Sign in again to continue learning.</string>
+    <string name="lesson_estimated_minutes">%1$d min</string>
+
+    <!-- Lesson completion and progress -->
+    <string name="completion_mark_complete">Mark as complete</string>
+    <string name="completion_recorded">Lesson completed</string>
+    <string name="completion_already_recorded">Already recorded</string>
+    <string name="completion_xp_awarded">%1$d XP awarded</string>
+    <string name="progress_title">Your progress</string>
+    <string name="progress_total_xp">Total XP</string>
+    <string name="progress_lessons">Lessons</string>
+    <string name="progress_topics">Topics</string>
+    <string name="progress_subjects">Subjects</string>
+    <string name="progress_completion">Completion</string>
+    <string name="progress_study_time">Study time</string>
+    <string name="progress_ratio">%1$d of %2$d</string>
+    <string name="progress_percentage">%1$.2f%%</string>
+    <string name="progress_minutes">%1$d min</string>
+    <string name="progress_subtitle_new">Complete a lesson to start tracking your progress here.</string>
+    <string name="progress_subtitle_returning">Here\'s a full breakdown of what you\'ve learned so far.</string>
+    <string name="progress_statistics_heading">Learning statistics</string>
+    <string name="progress_completion_bar_label">Overall completion</string>
+
+    <!-- Quizzes -->
+    <string name="quiz_open_action">Practice quizzes</string>
+    <string name="quiz_list_title">Quizzes</string>
+    <string name="quiz_attempt_title">Quiz</string>
+    <string name="quiz_empty_title">No quizzes yet</string>
+    <string name="quiz_empty_body">This lesson has no quizzes available.</string>
+    <string name="quiz_answered_of">Answered %1$d of %2$d</string>
+    <string name="quiz_submit">Submit answers</string>
+    <string name="quiz_result_title">Your result</string>
+    <string name="quiz_already_submitted">Already submitted</string>
+    <string name="quiz_progress_label">Question progress</string>
+
+    <!-- Counted nouns use plurals so other locales can decline them correctly. -->
+    <plurals name="quiz_question_count">
+        <item quantity="one">%1$d question</item>
+        <item quantity="other">%1$d questions</item>
+    </plurals>
+    <plurals name="quiz_available_count">
+        <item quantity="one">%1$d quiz available</item>
+        <item quantity="other">%1$d quizzes available</item>
+    </plurals>
+    <plurals name="quiz_result_score">
+        <item quantity="one">%1$d of %2$d correct</item>
+        <item quantity="other">%1$d of %2$d correct</item>
+    </plurals>
+    <plurals name="tutor_too_long">
+        <item quantity="one">Keep your question under %1$d character.</item>
+        <item quantity="other">Keep your question under %1$d characters.</item>
+    </plurals>
+    <string name="quiz_review_hint">Correct answers are marked below.</string>
+    <string name="quiz_answer_correct">Correct</string>
+    <string name="quiz_answer_wrong">Not correct</string>
+
+    <!-- AI Tutor -->
+    <string name="tutor_open_action">Ask the tutor</string>
+    <string name="tutor_title">Tutor</string>
+    <string name="tutor_you">You</string>
+    <string name="tutor_tutor">Tutor</string>
+    <string name="tutor_input_label">Ask about this lesson</string>
+    <string name="tutor_send">Send</string>
+    <string name="tutor_thinking">Thinking…</string>
+    <string name="tutor_empty_title">Ask about this lesson</string>
+    <string name="tutor_empty_body">Your questions are answered for this lesson only, and this conversation is not saved.</string>
+    <string name="tutor_refused">The tutor could not answer this one. Try rephrasing your question.</string>
+    <string name="tutor_truncated">This answer was cut short.</string>
+    <string name="tutor_error_rate_limited">Too many questions just now. Wait a moment and try again.</string>
+    <string name="tutor_error_provider">The tutor is unavailable right now.</string>
+    <string name="tutor_error_timeout">The tutor took too long to answer.</string>
+    <string name="tutor_section_body">Open a lesson and choose “Ask the tutor” to get help with it.</string>
+    <string name="tutor_privacy_note">Answers are limited to this lesson, and this conversation isn\'t saved.</string>
+    <string name="tutor_char_count">%1$d / %2$d</string>
+
+    <!-- Flashcards -->
+    <string name="flashcards_open_action">Flashcards</string>
+    <string name="flashcards_title">Flashcards</string>
+    <string name="flashcards_review_title">Review</string>
+    <string name="flashcards_empty_title">No flashcards yet</string>
+    <string name="flashcards_empty_body">This lesson has no flashcard decks available.</string>
+    <string name="flashcards_reveal">Show answer</string>
+    <string name="flashcards_known">I knew it</string>
+    <string name="flashcards_forgot">Still learning</string>
+    <string name="flashcards_progress">Card %1$d of %2$d</string>
+    <string name="flashcards_progress_label">Card progress</string>
+    <string name="flashcards_box">Box %1$d</string>
+    <string name="flashcards_memory">%1$d%% learned</string>
+    <string name="flashcards_session_done">Review complete</string>
+    <string name="flashcards_none_due_title">Nothing due right now</string>
+    <string name="flashcards_none_due_body">Come back later to keep these fresh.</string>
+    <plurals name="flashcards_card_count">
+        <item quantity="one">%1$d card</item>
+        <item quantity="other">%1$d cards</item>
+    </plurals>
+    <plurals name="flashcards_session_score">
+        <item quantity="one">%1$d of %2$d known</item>
+        <item quantity="other">%1$d of %2$d known</item>
+    </plurals>
+
+    <!-- Profile and settings -->
+    <string name="profile_title">Profile</string>
+    <string name="profile_field_display_name">Display name</string>
+    <string name="profile_field_email">Email</string>
+    <string name="profile_email_readonly">Your email address cannot be changed here.</string>
+    <string name="profile_field_education_level">Education level</string>
+    <string name="profile_education_beginner">Beginner</string>
+    <string name="profile_education_intermediate">Intermediate</string>
+    <string name="profile_education_advanced">Advanced</string>
+    <string name="profile_action_save">Save changes</string>
+    <string name="profile_saved">Profile updated.</string>
+    <string name="settings_title">Settings</string>
+    <string name="settings_field_locale">Language</string>
+    <string name="settings_locale_en">English</string>
+    <string name="settings_locale_vi">Tiếng Việt</string>
+    <string name="settings_field_daily_goal">Daily XP goal</string>
+    <string name="settings_saved">Settings updated.</string>
+    <string name="conflict_reload_required">This changed on another device. Reload to see the latest version before saving.</string>
+    <string name="action_reload">Reload</string>
+    <string name="action_sign_out">Sign out</string>
+    <string name="action_sign_out_all">Sign out of all devices</string>
+    <string name="sign_out_confirm_title">Sign out?</string>
+    <string name="sign_out_confirm_body">You will need to sign in again to continue learning.</string>
+    <string name="sign_out_all_confirm_title">Sign out everywhere?</string>
+    <string name="sign_out_all_confirm_body">This ends your session on every device.</string>
+    <string name="action_cancel">Cancel</string>
+
+    <!-- Reminders -->
+    <string name="reminder_title">Study reminder</string>
+    <string name="reminder_daily_label">Daily reminder</string>
+    <string name="reminder_daily_hint">A local notification at the time you choose.</string>
+    <string name="reminder_time_at">Remind me at %1$s</string>
+    <string name="reminder_pick_time">Reminder time</string>
+    <string name="reminder_permission_note">Notifications are turned off for this app, so reminders cannot be delivered.</string>
+    <string name="reminder_channel_name">Study reminders</string>
+    <string name="reminder_channel_description">Daily reminders to continue your lessons.</string>
+    <string name="reminder_notification_title">Time to study</string>
+    <string name="reminder_notification_body">Continue where you left off.</string>
+    <string name="action_save">Save</string>
+
+    <!-- Offline / cache freshness -->
+    <string name="cached_just_now">Showing a saved copy from just now. Connect to see the latest.</string>
+    <string name="cached_minutes_ago">Showing a saved copy from %1$d min ago. Connect to see the latest.</string>
+    <string name="cached_hours_ago">Showing a saved copy from %1$d h ago. Connect to see the latest.</string>
+    <string name="cached_days_ago">Showing a saved copy from %1$d d ago. Connect to see the latest.</string>
+
+    <!-- Shared component defaults -->
+    <string name="state_loading">Loading</string>
+    <string name="action_retry">Try again</string>
+    <string name="action_navigate_up">Navigate up</string>
+    <string name="error_generic_title">Something went wrong</string>
+    <string name="error_generic_body">Please try again.</string>
+    <string name="error_network_title">No connection</string>
+    <string name="error_network_body">Check your network and try again.</string>
+    <string name="error_reference">Reference: %1$s</string>
+</resources>

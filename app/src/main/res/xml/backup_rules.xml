@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Backups are disabled at the application level. This file exists so no
+  implicit default is applied, and it explicitly excludes credential storage.
+-->
+<full-backup-content>
+    <exclude domain="sharedpref" path="study_mentor_secure_session.xml" />
+    <exclude domain="file" path="datastore/" />
+</full-backup-content>

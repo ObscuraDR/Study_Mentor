@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      Platform-level shell theme only. All in-app styling is owned by the
+      Compose Material 3 theme; no XML screen styling is introduced.
+    -->
+    <style name="Theme.StudyMentor" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>

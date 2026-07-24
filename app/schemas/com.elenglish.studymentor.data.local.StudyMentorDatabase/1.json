@@ -1,0 +1,40 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "761a91d35a1ee3174f4927ee37301048",
+    "entities": [
+      {
+        "tableName": "cache_metadata",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`resourceKey` TEXT NOT NULL, `fetchedAtEpochMillis` INTEGER NOT NULL, PRIMARY KEY(`resourceKey`))",
+        "fields": [
+          {
+            "fieldPath": "resourceKey",
+            "columnName": "resourceKey",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fetchedAtEpochMillis",
+            "columnName": "fetchedAtEpochMillis",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "resourceKey"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '761a91d35a1ee3174f4927ee37301048')"
+    ]
+  }
+}
