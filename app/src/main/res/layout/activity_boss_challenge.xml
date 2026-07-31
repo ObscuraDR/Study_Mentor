@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_md">
+        <TextView
+            style="@style/TextAppearance.HeadlineMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:accessibilityHeading="true"
+            android:text="@string/boss_title"
+            android:textColor="?android:attr/textColorPrimary" />
+        <ProgressBar
+            android:id="@+id/boss_loading"
+            android:layout_width="@dimen/touch_button"
+            android:layout_height="@dimen/touch_button"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/spacing_lg"
+            android:contentDescription="@string/state_loading" />
+        <LinearLayout
+            android:id="@+id/boss_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+            <TextView
+                android:id="@+id/boss_name"
+                style="@style/TextAppearance.HeadlineSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_md"
+                android:textColor="?android:attr/textColorPrimary" />
+            <TextView
+                android:id="@+id/boss_description"
+                style="@style/TextAppearance.BodyMedium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xs"
+                android:textColor="@color/light_text_secondary" />
+            <TextView
+                android:id="@+id/boss_reward"
+                style="@style/TextAppearance.TitleMedium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_sm"
+                android:textColor="@color/primary_base" />
+            <LinearLayout
+                android:id="@+id/boss_questions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+            <TextView
+                android:id="@+id/boss_status"
+                style="@style/TextAppearance.BodyMedium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_md"
+                android:accessibilityLiveRegion="polite"
+                android:text="@string/boss_answer_all"
+                android:textColor="@color/light_text_secondary" />
+            <Button
+                android:id="@+id/boss_submit"
+                style="@style/StudyMentorButton"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/touch_button"
+                android:layout_marginTop="@dimen/spacing_sm"
+                android:text="@string/boss_submit" />
+            <Button
+                android:id="@+id/boss_retry_submit"
+                style="@style/StudyMentorButton.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/touch_button"
+                android:layout_marginTop="@dimen/spacing_sm"
+                android:text="@string/action_retry"
+                android:visibility="gone" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/boss_error"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_lg"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+            <TextView
+                style="@style/TextAppearance.BodyLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/error_generic_body"
+                android:textColor="?android:attr/textColorPrimary" />
+            <Button
+                android:id="@+id/boss_retry"
+                style="@style/StudyMentorButton.Outlined"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/touch_button"
+                android:layout_marginTop="@dimen/spacing_sm"
+                android:text="@string/action_retry" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

@@ -5,6 +5,7 @@ import com.elenglish.studymentor.data.remote.dto.QuizAttemptRequestDto
 import com.elenglish.studymentor.data.remote.dto.QuizAttemptResultDto
 import com.elenglish.studymentor.data.remote.dto.QuizDetailDto
 import com.elenglish.studymentor.data.remote.dto.QuizSummaryDto
+import com.elenglish.studymentor.data.remote.dto.WrongAnswerPageDto
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -14,6 +15,14 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface QuizApi {
+
+    @GET("me/wrong-answers")
+    suspend fun getWrongAnswers(
+        @Query("page") page: Int,
+        @Query("pageSize") pageSize: Int,
+        @Query("lessonId") lessonId: String? = null,
+        @Query("quizId") quizId: String? = null,
+    ): Response<ApiEnvelope<WrongAnswerPageDto>>
 
     /** `lessonId` is a required query parameter. */
     @GET("quizzes")

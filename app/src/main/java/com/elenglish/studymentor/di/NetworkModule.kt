@@ -11,14 +11,19 @@ import com.elenglish.studymentor.core.time.SystemTimeSource
 import com.elenglish.studymentor.core.time.TimeSource
 import com.elenglish.studymentor.core.uuid.UuidGenerator
 import com.elenglish.studymentor.core.uuid.UuidV7Generator
+import com.elenglish.studymentor.data.account.AccountRepository
 import com.elenglish.studymentor.data.catalog.CatalogRepository
 import com.elenglish.studymentor.data.learning.CompletedLessonsRegistry
 import com.elenglish.studymentor.data.remote.AccountApi
 import com.elenglish.studymentor.data.remote.AuthApi
 import com.elenglish.studymentor.data.remote.CatalogApi
+import com.elenglish.studymentor.data.remote.CampaignApi
+import com.elenglish.studymentor.data.remote.EngagementApi
+import com.elenglish.studymentor.data.remote.StreakRecoveryApi
 import com.elenglish.studymentor.data.remote.LearningApi
 import com.elenglish.studymentor.data.remote.QuizApi
 import com.elenglish.studymentor.data.remote.FlashcardApi
+import com.elenglish.studymentor.data.remote.FullProductApi
 import com.elenglish.studymentor.data.remote.TutorApi
 import com.elenglish.studymentor.notifications.ReminderScheduler
 import com.elenglish.studymentor.data.session.KeystoreRefreshTokenStorage
@@ -126,6 +131,10 @@ object NetworkModule {
 
     @Provides
     @Singleton
+    fun provideCampaignApi(retrofit: Retrofit): CampaignApi = retrofit.create(CampaignApi::class.java)
+
+    @Provides
+    @Singleton
     fun provideLearningApi(retrofit: Retrofit): LearningApi =
         retrofit.create(LearningApi::class.java)
 
@@ -135,12 +144,27 @@ object NetworkModule {
 
     @Provides
     @Singleton
+    fun provideEngagementApi(retrofit: Retrofit): EngagementApi =
+        retrofit.create(EngagementApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideStreakRecoveryApi(retrofit: Retrofit): StreakRecoveryApi =
+        retrofit.create(StreakRecoveryApi::class.java)
+
+    @Provides
+    @Singleton
     fun provideTutorApi(retrofit: Retrofit): TutorApi = retrofit.create(TutorApi::class.java)
 
     @Provides
     @Singleton
     fun provideFlashcardApi(retrofit: Retrofit): FlashcardApi =
         retrofit.create(FlashcardApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideFullProductApi(retrofit: Retrofit): FullProductApi =
+        retrofit.create(FullProductApi::class.java)
 
     /** Keystore-backed store for the refresh token. */
     @Provides
@@ -189,6 +213,16 @@ abstract class SessionStorageModule {
     @IntoSet
     abstract fun bindReminderSchedulerAsSessionScoped(
         implementation: ReminderScheduler,
+    ): SessionScopedStore
+
+    /**
+     * Profile and settings cache must be wiped on sign-out so one user's data
+     * never bleeds into the session of whoever signs in next on the device.
+     */
+    @Binds
+    @IntoSet
+    abstract fun bindAccountRepositoryAsSessionScoped(
+        implementation: AccountRepository,
     ): SessionScopedStore
 
     @Binds

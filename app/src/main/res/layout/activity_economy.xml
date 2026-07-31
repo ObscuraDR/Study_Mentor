@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="@dimen/spacing_md">
+    <TextView
+        style="@style/TextAppearance.HeadlineMedium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:accessibilityHeading="true"
+        android:text="@string/economy_title"
+        android:textColor="?android:attr/textColorPrimary" />
+    <ProgressBar
+        android:id="@+id/economy_loading"
+        android:layout_width="@dimen/touch_button"
+        android:layout_height="@dimen/touch_button"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/spacing_lg"
+        android:contentDescription="@string/state_loading" />
+    <LinearLayout
+        android:id="@+id/economy_content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:visibility="gone">
+        <TextView
+            android:id="@+id/economy_balance"
+            style="@style/TextAppearance.HeadlineSmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_sm"
+            android:textColor="@color/primary_base" />
+        <TextView
+            android:id="@+id/purchase_status"
+            style="@style/TextAppearance.BodyMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:accessibilityLiveRegion="polite"
+            android:textColor="@color/light_text_secondary" />
+        <Button
+            android:id="@+id/purchase_retry"
+            style="@style/StudyMentorButton.Outlined"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/touch_button"
+            android:layout_marginTop="@dimen/spacing_sm"
+            android:text="@string/action_retry"
+            android:visibility="gone" />
+        <TextView
+            style="@style/TextAppearance.TitleMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_md"
+            android:text="@string/economy_inventory"
+            android:textColor="?android:attr/textColorPrimary" />
+        <TextView
+            android:id="@+id/inventory_summary"
+            style="@style/TextAppearance.BodyMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:textColor="@color/light_text_secondary" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/shop_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/spacing_md"
+            android:layout_weight="1"
+            android:clipToPadding="false" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/economy_error"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+        <TextView
+            style="@style/TextAppearance.BodyLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/error_generic_body"
+            android:textColor="?android:attr/textColorPrimary" />
+        <Button
+            android:id="@+id/economy_retry"
+            style="@style/StudyMentorButton.Outlined"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/touch_button"
+            android:layout_marginTop="@dimen/spacing_sm"
+            android:text="@string/action_retry" />
+    </LinearLayout>
+</LinearLayout>

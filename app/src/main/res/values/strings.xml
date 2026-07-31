@@ -22,6 +22,7 @@
     <string name="section_profile">Profile</string>
 
     <!-- Home dashboard -->
+    <string name="home_greeting_named">Hi, %1$s! Welcome back.</string>
     <string name="home_greeting_returning">Welcome back!</string>
     <string name="home_greeting_new">Welcome! Let\'s get started.</string>
     <string name="home_subtitle_returning">Here\'s where things stand today.</string>
@@ -45,6 +46,41 @@
     <string name="catalog_topics_empty_body">This subject has no topics available.</string>
     <string name="catalog_lessons_empty_title">No lessons yet</string>
     <string name="catalog_lessons_empty_body">This topic has no lessons available.</string>
+    <string name="campaign_entry">Open campaign map</string>
+    <string name="campaign_title">Learning journey</string>
+    <string name="campaign_guidance">Choose any lesson. The suggested lesson is a guide, not a lock.</string>
+    <string name="campaign_progress">Progress: %1$d of %2$d lessons completed</string>
+    <string name="campaign_recommended_hint">Recommended next lesson</string>
+    <string name="campaign_recommended_label">Recommended next lesson</string>
+    <string name="campaign_zone_progress">%1$d of %2$d lessons completed</string>
+    <string name="campaign_topic_progress">%1$d of %2$d lessons completed</string>
+    <string name="campaign_lesson_completed">Completed</string>
+    <string name="campaign_lesson_recommended">Recommended next lesson</string>
+    <string name="campaign_lesson_not_started">Not started</string>
+    <string name="campaign_lesson_unavailable">Not currently available</string>
+    <string name="campaign_empty_title">Campaign map is not available</string>
+    <string name="campaign_empty_body">Choose a lesson from Learn while the map is being prepared.</string>
+    <string name="boss_title">Boss challenge</string>
+    <string name="economy_title">Shell shop</string>
+    <string name="boss_reward">Reward: %1$d shells</string>
+    <string name="boss_unavailable">Complete the required learning path to unlock this challenge.</string>
+    <string name="boss_answer_all">Answer every question before submitting.</string>
+    <string name="boss_submit">Submit challenge</string>
+    <string name="boss_submitting">Submitting to the server…</string>
+    <string name="boss_submit_failed">The result could not be confirmed.</string>
+    <string name="boss_passed">Passed: %1$d/%2$d correct · %3$d shells awarded · balance %4$d</string>
+    <string name="boss_not_passed">Result: %1$d/%2$d correct · %3$d shells awarded · balance %4$d</string>
+    <string name="economy_balance">Balance: %1$d shells</string>
+    <string name="economy_price">%1$d shells</string>
+    <string name="economy_buy">Buy</string>
+    <string name="economy_buying">Confirming purchase…</string>
+    <string name="economy_owned">Owned</string>
+    <string name="economy_cosmetic_only">Shells unlock cosmetic items only and cannot be purchased with real money.</string>
+    <string name="economy_purchase_success">Purchase confirmed by the server.</string>
+    <string name="economy_purchase_failed">The purchase result could not be confirmed.</string>
+    <string name="economy_inventory">Inventory</string>
+    <string name="economy_inventory_empty">No cosmetic items owned yet.</string>
+    <string name="economy_inventory_item">%1$s · quantity %2$d</string>
     <string name="catalog_showing_saved_copy">Showing a saved copy. Connect to see the latest.</string>
     <string name="catalog_not_found_title">Not available</string>
     <string name="catalog_not_found_body">This content is no longer available.</string>
@@ -71,6 +107,59 @@
     <string name="progress_subtitle_returning">Here\'s a full breakdown of what you\'ve learned so far.</string>
     <string name="progress_statistics_heading">Learning statistics</string>
     <string name="progress_completion_bar_label">Overall completion</string>
+
+    <!-- Engagement: level/XP, streak, achievements, missions. Every value
+         shown under these strings is read from GET /me/engagement; none is
+         calculated on the device. -->
+    <string name="engagement_heading">Engagement</string>
+    <string name="engagement_level">Level %1$d</string>
+    <string name="engagement_xp_to_next">%1$d / %2$d XP to next level</string>
+    <string name="engagement_streak">%1$d-day streak</string>
+    <string name="engagement_streak_none">No streak yet</string>
+    <string name="engagement_achievements_heading">Achievements</string>
+    <string name="engagement_achievements_empty">Keep learning to earn your first achievement.</string>
+    <string name="achievement_first_lesson">First Lesson</string>
+    <string name="achievement_curious_learner">Curious Learner</string>
+    <string name="achievement_quiz_explorer">Quiz Explorer</string>
+    <string name="achievement_review_habit">Review Habit</string>
+    <string name="achievement_seven_day_learner">Seven-Day Learner</string>
+    <string name="achievement_lesson_path_10">Lesson Path 10</string>
+    <string name="achievement_lesson_path_25">Lesson Path 25</string>
+    <string name="achievement_subject_explorer_3">Subject Explorer</string>
+    <string name="achievement_quiz_first_attempt">First Quiz</string>
+    <string name="achievement_quiz_confident_5">Quiz Confident</string>
+    <string name="achievement_reviewer_25">Reviewer 25</string>
+    <string name="achievement_reviewer_100">Reviewer 100</string>
+    <string name="achievement_streak_3_days">3-Day Streak</string>
+    <string name="achievement_streak_14_days">14-Day Streak</string>
+    <string name="achievement_unknown_placeholder">Achievement</string>
+    <string name="engagement_daily_mission_heading">Daily mission</string>
+    <string name="engagement_weekly_mission_heading">Weekly mission</string>
+    <string name="engagement_mission_lesson">Complete a lesson</string>
+    <string name="engagement_mission_quiz">Attempt a quiz</string>
+    <string name="engagement_mission_reviews">Review flashcards</string>
+    <string name="engagement_mission_actions">Learning actions</string>
+    <string name="engagement_mission_days">Active days</string>
+    <string name="engagement_mission_goal_ratio">%1$d of %2$d</string>
+    <string name="engagement_mission_completed">Completed</string>
+    <string name="engagement_daily_summary">Lessons %1$d/%2$d · Quizzes %3$d/%4$d · Reviews %5$d/%6$d</string>
+    <string name="engagement_weekly_summary">Actions %1$d/%2$d · Active days %3$d/%4$d</string>
+    <string name="engagement_recovery_heading">Streak continuity</string>
+    <string name="engagement_recovery_loading">Checking streak continuity availability…</string>
+    <string name="engagement_recovery_unavailable">Streak continuity is temporarily unavailable.</string>
+    <string name="engagement_recovery_not_eligible">No recovery is available right now.</string>
+    <string name="engagement_recovery_eligible">One missed day may be restored from accepted learning activity.</string>
+    <string name="engagement_recovery_eligible_with_date">A qualifying missed day (%1$s) can be restored from accepted learning activity.</string>
+    <string name="engagement_recovery_date">Missed day: %1$s</string>
+    <string name="engagement_recovery_action">Restore streak continuity</string>
+    <string name="engagement_recovery_submitting">Submitting recovery…</string>
+    <string name="engagement_recovery_success">Streak continuity restored.</string>
+    <string name="engagement_recovery_claim_failed">Recovery could not be completed.</string>
+    <string name="engagement_recovery_reason_streak">A longer uninterrupted learning streak is required.</string>
+    <string name="engagement_recovery_reason_gap">The missed-day pattern is not eligible for recovery.</string>
+    <string name="engagement_recovery_reason_action">Complete a qualifying learning action to check again.</string>
+    <string name="engagement_recovery_reason_limit">Recovery is not available again yet.</string>
+    <string name="engagement_recovery_reason_unavailable">Recovery is not available for this period.</string>
 
     <!-- Quizzes -->
     <string name="quiz_open_action">Practice quizzes</string>
@@ -104,6 +193,21 @@
     <string name="quiz_review_hint">Correct answers are marked below.</string>
     <string name="quiz_answer_correct">Correct</string>
     <string name="quiz_answer_wrong">Not correct</string>
+    <string name="wrong_answer_title">Review missed questions</string>
+    <string name="wrong_answer_subtitle">Your history is saved securely across sessions.</string>
+    <string name="wrong_answer_empty">No missed questions yet. Keep going!</string>
+    <string name="wrong_answer_selected">Your answer: %1$s</string>
+    <string name="wrong_answer_correct">Correct answer: %1$s</string>
+    <string name="wrong_answer_retry_quiz">Try this quiz again</string>
+    <string name="action_load_more">Load more</string>
+    <plurals name="wrong_answer_count">
+        <item quantity="one">Missed once</item>
+        <item quantity="other">Missed %d times</item>
+    </plurals>
+    <plurals name="wrong_answer_total">
+        <item quantity="one">%d question to review</item>
+        <item quantity="other">%d questions to review</item>
+    </plurals>
 
     <!-- AI Tutor -->
     <string name="tutor_open_action">Ask the tutor</string>
@@ -131,6 +235,8 @@
     <string name="flashcards_empty_title">No flashcards yet</string>
     <string name="flashcards_empty_body">This lesson has no flashcard decks available.</string>
     <string name="flashcards_reveal">Show answer</string>
+    <string name="flashcards_front">Question</string>
+    <string name="flashcards_back">Answer</string>
     <string name="flashcards_known">I knew it</string>
     <string name="flashcards_forgot">Still learning</string>
     <string name="flashcards_progress">Card %1$d of %2$d</string>
@@ -155,6 +261,7 @@
     <string name="profile_field_email">Email</string>
     <string name="profile_email_readonly">Your email address cannot be changed here.</string>
     <string name="profile_field_education_level">Education level</string>
+    <string name="profile_education_not_set">Not set</string>
     <string name="profile_education_beginner">Beginner</string>
     <string name="profile_education_intermediate">Intermediate</string>
     <string name="profile_education_advanced">Advanced</string>
@@ -179,7 +286,7 @@
     <!-- Reminders -->
     <string name="reminder_title">Study reminder</string>
     <string name="reminder_daily_label">Daily reminder</string>
-    <string name="reminder_daily_hint">A local notification at the time you choose.</string>
+    <string name="reminder_daily_hint">A local notification around the time you choose.</string>
     <string name="reminder_time_at">Remind me at %1$s</string>
     <string name="reminder_pick_time">Reminder time</string>
     <string name="reminder_permission_note">Notifications are turned off for this app, so reminders cannot be delivered.</string>
@@ -197,6 +304,8 @@
 
     <!-- Shared component defaults -->
     <string name="state_loading">Loading</string>
+    <string name="value_placeholder">--</string>
+    <string name="lesson_duration_placeholder">-- min</string>
     <string name="action_retry">Try again</string>
     <string name="action_navigate_up">Navigate up</string>
     <string name="error_generic_title">Something went wrong</string>
@@ -204,4 +313,31 @@
     <string name="error_network_title">No connection</string>
     <string name="error_network_body">Check your network and try again.</string>
     <string name="error_reference">Reference: %1$s</string>
+
+    <!-- Splash -->
+    <string name="splash_tagline">Your personal English learning companion</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_get_started">Get started</string>
+    <string name="onboarding_page1_title">Learn at your own pace</string>
+    <string name="onboarding_page1_body">Browse subjects, topics and lessons. Mark them complete to track your progress.</string>
+    <string name="onboarding_page2_title">Review with flashcards</string>
+    <string name="onboarding_page2_body">Reinforce what you learn with spaced-repetition flashcard decks tied to each lesson.</string>
+    <string name="onboarding_page3_title">Stay motivated</string>
+    <string name="onboarding_page3_body">Earn XP, keep your streak alive, complete daily missions and unlock achievements.</string>
+
+    <!-- Forgot password -->
+    <string name="forgot_password_title">Forgot password</string>
+    <string name="forgot_password_heading">Reset your password</string>
+    <string name="forgot_password_body">Enter your email address and we\u2019ll send you a link to reset your password.</string>
+    <string name="forgot_password_action">Send reset link</string>
+    <string name="forgot_password_success">Check your inbox. If that email is registered, a reset link is on its way.</string>
+
+    <string name="catalog_lessons_search_hint">Search lessons…</string>
+    <string name="catalog_filter_all">All</string>
+
+    <!-- Auth extras -->
+    <string name="auth_forgot_password">Forgot your password?</string>
 </resources>

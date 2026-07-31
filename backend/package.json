@@ -1,0 +1,36 @@
+﻿{
+  "name": "ai-study-mentor-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI Study Mentor Backend API",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "start:dev": "node --watch src/index.js",
+    "test": "node --test test/config.test.js test/identity-api.test.js test/identity-schema.test.js test/learning-api.test.js test/learning-schema.test.js test/learning-service.test.js test/engagement-service.test.js test/campaign-service.test.js test/campaign-api.test.js test/openapi-learning-contract.test.js test/openapi-engagement-contract.test.js test/openapi-campaign-contract.test.js test/openapi-quiz-contract.test.js test/openapi-full-product-contract.test.js test/production-repository.test.js test/quiz-api.test.js test/quiz-schema.test.js test/quiz-service.test.js test/flashcard-service.test.js test/openapi-flashcard-contract.test.js test/settings-api.test.js test/ai-tutor-service.test.js test/streak-recovery-schema.test.js test/streak-recovery-repository.test.js test/streak-recovery-eligibility.test.js test/streak-recovery-claim.test.js test/streak-recovery-api.test.js test/full-product-api.test.js",
+    "test:contract": "node --test ../contracts/tests/openapi-v1-contract.test.mjs",
+    "test:integration": "node --test test/postgres-identity-integration.test.js",
+    "db:migrate": "node src/migrate.js",
+    "db:migrate:dev": "node src/migrate.js --development",
+    "db:migrate:test": "node src/migrate.js --test",
+    "db:verify:dev": "node src/verify-identity-schema.js --development",
+    "db:verify:test": "node src/verify-identity-schema.js --test",
+    "db:up": "docker compose up -d --wait",
+    "db:down": "docker compose down",
+    "db:reset": "docker compose down -v && docker compose up -d --wait",
+    "typecheck": "node --check src/index.js && node --check src/app.js && node --check src/config.js && node --check src/errors.js && node --check src/http.js && node --check src/passwords.js && node --check src/rate-limit.js && node --check src/server.js && node --check src/tokens.js && node --check src/validation.js && node --check src/migrate.js && node --check src/verify-identity-schema.js && node --check src/database/identity-migration.js && node --check src/services/auth-service.js && node --check src/services/learning-service.js && node --check src/services/quiz-service.js && node --check src/services/flashcard-service.js && node --check src/services/settings-service.js && node --check src/services/engagement-service.js && node --check src/services/streak-recovery-eligibility-service.js && node --check src/services/streak-recovery-claim-service.js && node --check src/services/campaign-service.js && node --check src/services/full-product-service.js && node --check src/services/ai-tutor-service.js && node --check src/admission-mutex.js && node --check src/rate-admission.js && node --check src/fake-tutor-provider.js && node --check src/repositories/postgres-identity-repository.js",
+    "verify": "npm run typecheck && npm test && npm run test:contract",
+    "verify:full": "npm run verify && npm run db:migrate:test && npm run test:integration"
+  },
+  "dependencies": {
+    "argon2": "^0.44.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.21.0",
+    "express-rate-limit": "^8.5.2",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.16.0",
+    "uuid": "^11.1.1"
+  }
+}

@@ -2,6 +2,7 @@ package com.elenglish.studymentor.ui.flashcards
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.elenglish.studymentor.core.network.ApiResult
 import com.elenglish.studymentor.data.flashcard.FlashcardRepository
@@ -40,6 +41,9 @@ class FlashcardDeckListViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow<FlashcardDeckListUiState>(FlashcardDeckListUiState.Loading)
     val uiState: StateFlow<FlashcardDeckListUiState> = _uiState.asStateFlow()
+
+    /** Java-friendly LiveData. */
+    val uiStateLiveData by lazy { _uiState.asLiveData() }
 
     init {
         load()
@@ -112,6 +116,9 @@ class FlashcardReviewViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow<FlashcardReviewUiState>(FlashcardReviewUiState.Loading)
     val uiState: StateFlow<FlashcardReviewUiState> = _uiState.asStateFlow()
+
+    /** Java-friendly LiveData. */
+    val uiStateLiveData by lazy { _uiState.asLiveData() }
 
     /** The review awaiting acceptance, held so a retry resends it unchanged. */
     private var pendingReview: PendingFlashcardReview? = null

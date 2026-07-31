@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_md">
+        <TextView android:id="@+id/quiz_title" style="@style/TextAppearance.HeadlineMedium" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="?android:attr/textColorPrimary" android:accessibilityHeading="true" />
+        <com.google.android.material.card.MaterialCardView
+            style="@style/StudyMentorCard"
+            android:id="@+id/progress_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_sm"
+            app:cardElevation="4dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+                <TextView android:id="@+id/progress_label" style="@style/TextAppearance.LabelMedium" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/quiz_progress_label" android:textColor="?attr/colorPrimary" />
+                <ProgressBar android:id="@+id/progress_bar" style="?android:progressBarStyleHorizontal" android:layout_width="match_parent" android:layout_height="8dp" android:layout_marginTop="@dimen/spacing_sm" android:max="100" />
+                <TextView android:id="@+id/progress_text" style="@style/TextAppearance.BodyMedium" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="@dimen/spacing_sm" android:textColor="@color/light_text_secondary" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+        <androidx.recyclerview.widget.RecyclerView android:id="@+id/questions_recycler" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="@dimen/spacing_md" android:nestedScrollingEnabled="false" />
+        <Button android:id="@+id/submit_button" style="@style/StudyMentorButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="@dimen/spacing_md" android:text="@string/quiz_submit" />
+        <com.google.android.material.card.MaterialCardView android:id="@+id/result_section" style="@style/StudyMentorCard" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="@dimen/spacing_md" android:visibility="gone" app:cardElevation="4dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+                <TextView android:id="@+id/result_title" style="@style/TextAppearance.TitleMedium" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/quiz_result_title" android:textColor="?attr/colorOnSurface" android:accessibilityHeading="true" />
+                <TextView android:id="@+id/result_score" style="@style/TextAppearance.HeadlineMedium" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="@dimen/spacing_sm" android:textColor="?attr/colorPrimary" />
+                <TextView android:id="@+id/result_review_hint" style="@style/TextAppearance.BodyMedium" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="@dimen/spacing_xs" android:text="@string/quiz_review_hint" android:textColor="@color/light_text_secondary" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
+</ScrollView>

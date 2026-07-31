@@ -4,6 +4,7 @@ import com.elenglish.studymentor.core.network.ApiError
 import com.elenglish.studymentor.core.network.ApiErrorCodes
 import com.elenglish.studymentor.core.network.ApiResult
 import com.elenglish.studymentor.core.network.safeApiCall
+import com.elenglish.studymentor.core.session.SessionScopedStore
 import com.elenglish.studymentor.data.remote.AccountApi
 import com.elenglish.studymentor.data.remote.dto.PatchValue
 import com.elenglish.studymentor.data.remote.dto.ProfileDto
@@ -30,13 +31,29 @@ import javax.inject.Singleton
 class AccountRepository @Inject constructor(
     private val accountApi: AccountApi,
     private val json: Json,
-) {
+) : SessionScopedStore {
 
-    suspend fun getProfile(): ApiResult<UserProfile> = safeApiCall(
-        json = json,
-        block = { accountApi.getProfile() },
-        transform = ProfileDto::toDomain,
-    )
+    @Volatile
+    private var cachedProfile: UserProfile? = null
+    @Volatile
+    private var cachedSettings: SharedSettings? = null
+
+    suspend fun getProfile(): ApiResult<UserProfile> {
+        val result = safeApiCall(
+            json = json,
+            block = { accountApi.getProfile() },
+            transform = ProfileDto::toDomain,
+        )
+        if (result is ApiResult.Success) cachedProfile = result.value
+        return result
+    }
+
+    /**
+     * Returns the last successfully fetched profile from memory, or `null` when
+     * nothing has been fetched in this session. Used by the Home greeting so it
+     * never needs to call the backend itself.
+     */
+    fun getCachedProfile(): UserProfile? = cachedProfile
 
     /**
      * Applies a partial profile patch.
@@ -69,11 +86,15 @@ class AccountRepository @Inject constructor(
         )
     }
 
-    suspend fun getSettings(): ApiResult<SharedSettings> = safeApiCall(
-        json = json,
-        block = { accountApi.getSettings() },
-        transform = SharedSettingsDto::toDomain,
-    )
+    suspend fun getSettings(): ApiResult<SharedSettings> {
+        val result = safeApiCall(
+            json = json,
+            block = { accountApi.getSettings() },
+            transform = SharedSettingsDto::toDomain,
+        )
+        if (result is ApiResult.Success) cachedSettings = result.value
+        return result
+    }
 
     /** `PUT /me/settings` replaces the whole resource; both fields are required. */
     suspend fun replaceSettings(
@@ -95,6 +116,12 @@ class AccountRepository @Inject constructor(
             },
             transform = SharedSettingsDto::toDomain,
         )
+    }
+
+    /** Wipes the in-memory profile/settings cache on sign-out or session change. */
+    override suspend fun clearForSignOut() {
+        cachedProfile = null
+        cachedSettings = null
     }
 }
 

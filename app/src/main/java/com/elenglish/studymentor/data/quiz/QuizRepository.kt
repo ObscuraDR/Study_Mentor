@@ -10,6 +10,8 @@ import com.elenglish.studymentor.data.remote.dto.QuizAttemptRequestDto
 import com.elenglish.studymentor.data.remote.dto.QuizAttemptResultDto
 import com.elenglish.studymentor.data.remote.dto.QuizDetailDto
 import com.elenglish.studymentor.data.remote.dto.QuizSummaryDto
+import com.elenglish.studymentor.data.remote.dto.WrongAnswerDto
+import com.elenglish.studymentor.data.remote.dto.WrongAnswerPageDto
 import com.elenglish.studymentor.domain.model.PendingQuizAttempt
 import com.elenglish.studymentor.domain.model.Quiz
 import com.elenglish.studymentor.domain.model.QuizAnswer
@@ -18,6 +20,8 @@ import com.elenglish.studymentor.domain.model.QuizOption
 import com.elenglish.studymentor.domain.model.QuizQuestion
 import com.elenglish.studymentor.domain.model.QuizQuestionResult
 import com.elenglish.studymentor.domain.model.QuizSummary
+import com.elenglish.studymentor.domain.model.WrongAnswer
+import com.elenglish.studymentor.domain.model.WrongAnswerPage
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -35,6 +39,21 @@ class QuizRepository @Inject constructor(
     private val uuidGenerator: UuidGenerator,
     private val json: Json,
 ) {
+
+    suspend fun getWrongAnswers(
+        page: Int = 1,
+        pageSize: Int = 20,
+        lessonId: String? = null,
+        quizId: String? = null,
+    ): ApiResult<WrongAnswerPage> {
+        require(page > 0) { "page must be positive" }
+        require(pageSize in 1..100) { "pageSize must be between 1 and 100" }
+        return safeApiCall(
+            json = json,
+            block = { quizApi.getWrongAnswers(page, pageSize, lessonId, quizId) },
+            transform = WrongAnswerPageDto::toDomain,
+        )
+    }
 
     suspend fun listQuizzes(lessonId: String): ApiResult<List<QuizSummary>> = safeApiCall(
         json = json,
@@ -86,6 +105,19 @@ class QuizRepository @Inject constructor(
         const val HTTP_OK = 200
     }
 }
+
+private fun WrongAnswerPageDto.toDomain() = WrongAnswerPage(
+    items = items.map(WrongAnswerDto::toDomain),
+    page = page,
+    pageSize = pageSize,
+    totalItems = totalItems,
+    hasNext = hasNext,
+)
+
+private fun WrongAnswerDto.toDomain() = WrongAnswer(
+    questionId, quizId, quizTitle, lessonId, prompt, selectedOptionId,
+    selectedOptionText, correctOptionId, correctOptionText, lastAnsweredAt, wrongCount,
+)
 
 private fun QuizSummaryDto.toDomain() = QuizSummary(
     id = id,

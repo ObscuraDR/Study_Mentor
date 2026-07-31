@@ -68,3 +68,10 @@ data class RefreshedSessionDto(
         "RefreshedSessionDto(accessToken=***, accessTokenExpiresAt=$accessTokenExpiresAt, " +
             "refreshToken=${if (refreshToken == null) "null" else "***"})"
 }
+
+@Serializable
+data class PasswordResetRequestDto(
+    val email: String,
+) {
+    override fun toString(): String = "PasswordResetRequestDto(email=***)"
+}

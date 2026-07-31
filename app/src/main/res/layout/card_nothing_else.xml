@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/nothing_else_card"
+    style="@style/StudyMentorCard"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            style="@style/TextAppearance.TitleMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/home_nothing_yet_title"
+            android:textColor="?android:attr/textColorPrimary"
+            android:accessibilityHeading="true" />
+
+        <TextView
+            style="@style/TextAppearance.BodyMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:text="@string/home_nothing_yet_body"
+            android:textColor="@color/light_text_secondary" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

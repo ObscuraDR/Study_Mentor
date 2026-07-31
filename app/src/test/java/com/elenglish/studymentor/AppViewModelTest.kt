@@ -1,4 +1,4 @@
-﻿package com.elenglish.studymentor
+package com.elenglish.studymentor
 
 import com.elenglish.studymentor.core.network.ApiErrorCodes
 import com.elenglish.studymentor.data.preferences.AppPreferencesRepository
@@ -7,6 +7,7 @@ import com.elenglish.studymentor.testing.awaitQuiescence
 import com.elenglish.studymentor.testing.Fixtures
 import com.elenglish.studymentor.testing.awaitCondition
 import com.elenglish.studymentor.ui.theme.ThemeMode
+import io.mockk.coJustRun
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.CoroutineScope
@@ -30,8 +31,11 @@ import org.junit.Test
 class AppViewModelTest {
 
     private val themeMode = MutableStateFlow(ThemeMode.System)
+    private val onboardingCompleted = MutableStateFlow(false)
     private val preferences: AppPreferencesRepository = mockk {
         every { this@mockk.themeMode } returns this@AppViewModelTest.themeMode
+        every { this@mockk.onboardingCompleted } returns this@AppViewModelTest.onboardingCompleted
+        coJustRun { setOnboardingCompleted() }
     }
     private var harness: ApiTestHarness? = null
     private val collectorScope = CoroutineScope(Job() + Dispatchers.Default)
@@ -49,13 +53,9 @@ class AppViewModelTest {
         Dispatchers.resetMain()
     }
 
-    /**
-     * `uiState` is a `WhileSubscribed` StateFlow, so it only recomputes while it
-     * has a collector; the test keeps one alive for the test's duration.
-     */
     private fun createSubscribedViewModel(refreshToken: String? = null): AppViewModel {
         val h = ApiTestHarness(refreshToken).also { harness = it }
-        val viewModel = AppViewModel(preferences, h.sessionStateHolder, h.sessionRepository)
+        val viewModel = AppViewModel(preferences, h.sessionStateHolder, h.sessionRepository, preferences)
         collectorScope.launch { viewModel.uiState.collect { } }
         return viewModel
     }
@@ -69,10 +69,9 @@ class AppViewModelTest {
     @Test
     fun `starts in restoring so no shell is shown before the session is known`() {
         val h = ApiTestHarness(refreshToken = "refresh-1").also { harness = it }
-        // Never answered, so restoration stays in flight.
         h.server.enqueue(MockResponse().setSocketPolicy(okhttp3.mockwebserver.SocketPolicy.NO_RESPONSE))
 
-        val viewModel = AppViewModel(preferences, h.sessionStateHolder, h.sessionRepository)
+        val viewModel = AppViewModel(preferences, h.sessionStateHolder, h.sessionRepository, preferences)
 
         assertEquals(SessionStatus.Restoring, viewModel.uiState.value.sessionStatus)
     }
@@ -91,7 +90,7 @@ class AppViewModelTest {
         h.server.enqueue(MockResponse().setResponseCode(200).setBody(Fixtures.refreshedSession()))
         h.server.enqueue(MockResponse().setResponseCode(200).setBody(Fixtures.user()))
 
-        val viewModel = AppViewModel(preferences, h.sessionStateHolder, h.sessionRepository)
+        val viewModel = AppViewModel(preferences, h.sessionStateHolder, h.sessionRepository, preferences)
         collectorScope.launch { viewModel.uiState.collect { } }
 
         viewModel.awaitStatus(SessionStatus.Authenticated)
@@ -105,7 +104,7 @@ class AppViewModelTest {
                 .setBody(Fixtures.error(ApiErrorCodes.AUTH_REFRESH_TOKEN_INVALID)),
         )
 
-        val viewModel = AppViewModel(preferences, h.sessionStateHolder, h.sessionRepository)
+        val viewModel = AppViewModel(preferences, h.sessionStateHolder, h.sessionRepository, preferences)
         collectorScope.launch { viewModel.uiState.collect { } }
 
         viewModel.awaitStatus(SessionStatus.Guest)

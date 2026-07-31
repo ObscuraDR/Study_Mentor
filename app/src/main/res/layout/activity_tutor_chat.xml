@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical">
+    <TextView android:id="@+id/privacy_note" style="@style/TextAppearance.BodyMedium" android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@color/primary_container" android:padding="@dimen/spacing_sm" android:text="@string/tutor_privacy_note" android:textColor="@color/on_primary_container" />
+    <FrameLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+        <androidx.recyclerview.widget.RecyclerView android:id="@+id/chat_recycler" android:layout_width="match_parent" android:layout_height="match_parent" android:clipToPadding="false" android:padding="@dimen/spacing_md" />
+        <LinearLayout android:id="@+id/empty_chat" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:orientation="vertical" android:padding="@dimen/spacing_lg" android:visibility="gone">
+            <TextView style="@style/TextAppearance.TitleMedium" android:layout_width="wrap_content" android:layout_height="wrap_content" android:accessibilityHeading="true" android:gravity="center" android:text="@string/tutor_empty_title" android:textColor="?attr/colorOnSurface" />
+            <TextView style="@style/TextAppearance.BodyMedium" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="@dimen/spacing_sm" android:gravity="center" android:text="@string/tutor_empty_body" android:textColor="@color/light_text_secondary" />
+        </LinearLayout>
+    </FrameLayout>
+    <LinearLayout android:id="@+id/failure_container" android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@color/feedback_error_bg" android:gravity="center_vertical" android:orientation="horizontal" android:padding="@dimen/spacing_sm" android:visibility="gone">
+        <TextView android:id="@+id/failure_text" style="@style/TextAppearance.BodyMedium" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:textColor="@color/feedback_error" />
+        <Button android:id="@+id/retry_button" style="@style/StudyMentorButton.Outlined" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/action_retry" />
+    </LinearLayout>
+    <TextView android:id="@+id/char_count" style="@style/TextAppearance.LabelSmall" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="end" android:paddingHorizontal="@dimen/spacing_sm" android:textColor="@color/light_text_secondary" android:visibility="gone" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:padding="@dimen/spacing_sm" android:gravity="center_vertical" android:background="@color/light_surface_variant">
+        <EditText android:id="@+id/message_input" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:hint="@string/tutor_input_label" android:maxLines="3" android:inputType="textMultiLine" />
+        <ProgressBar android:id="@+id/sending_progress" android:layout_width="48dp" android:layout_height="48dp" android:contentDescription="@string/tutor_thinking" android:visibility="gone" />
+        <ImageButton android:id="@+id/send_button" android:layout_width="48dp" android:layout_height="48dp" android:src="@drawable/ic_send" app:tint="?attr/colorPrimary" android:background="?attr/selectableItemBackgroundBorderless" android:contentDescription="@string/tutor_send" />
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/StudyMentorCard"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/spacing_sm"
+    app:cardElevation="2dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/wrong_quiz_title"
+            style="@style/TextAppearance.LabelMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/primary_base" />
+
+        <TextView
+            android:id="@+id/wrong_prompt"
+            style="@style/TextAppearance.TitleMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:textColor="?android:attr/textColorPrimary" />
+
+        <TextView
+            android:id="@+id/wrong_selected"
+            style="@style/TextAppearance.BodyMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_sm"
+            android:textColor="@color/feedback_error" />
+
+        <TextView
+            android:id="@+id/wrong_correct"
+            style="@style/TextAppearance.BodyMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:textColor="@color/feedback_success" />
+
+        <TextView
+            android:id="@+id/wrong_count"
+            style="@style/TextAppearance.LabelMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_sm"
+            android:textColor="@color/light_text_secondary" />
+
+        <Button
+            android:id="@+id/wrong_retry_quiz"
+            style="@style/StudyMentorButton.Outlined"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/touch_button"
+            android:layout_marginTop="@dimen/spacing_sm"
+            android:text="@string/wrong_answer_retry_quiz" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

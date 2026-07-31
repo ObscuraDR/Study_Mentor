@@ -14,3 +14,20 @@ local.properties
 docs/
 screenshots_parity*/
 verification_logs*
+.aider*
+/backend/node_modules/
+/backend/.env
+/backend/*.log
+/backend/coverage/
+/.claude/
+/.continue/
+/.kotlin/
+/.vscode/
+
+# Repository delivery excludes documentation artifacts and screenshots.
+*.doc
+*.docx
+*.pdf
+*.png
+*.md
+!README.md

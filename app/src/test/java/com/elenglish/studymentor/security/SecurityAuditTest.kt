@@ -77,6 +77,7 @@ class SecurityAuditTest {
             context,
             StudyMentorDatabase::class.java,
         ).allowMainThreadQueries().build().also { database = it }
+        db.openHelper.writableDatabase.execSQL("PRAGMA foreign_keys = OFF")
 
         val columns = mutableListOf<String>()
         db.openHelper.readableDatabase.query(

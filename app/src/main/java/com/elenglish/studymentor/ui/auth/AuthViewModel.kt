@@ -1,6 +1,8 @@
 package com.elenglish.studymentor.ui.auth
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.elenglish.studymentor.core.network.ApiError
 import com.elenglish.studymentor.core.network.ApiErrorCodes
@@ -54,6 +56,9 @@ class AuthViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(AuthUiState())
     val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
+
+    /** Java-friendly LiveData. */
+    val uiStateLiveData by lazy { _uiState.asLiveData() }
 
     fun setMode(mode: AuthMode) {
         _uiState.update {
@@ -119,8 +124,12 @@ class AuthViewModel @Inject constructor(
                     _uiState.update { it.copy(submitting = false, password = "") }
                 }
                 is ApiResult.Failure -> {
+                    val failure = result.error.toAuthFailure(state.mode)
+                    if (result.error is ApiError.Backend) {
+                        Log.w("AuthViewModel", "Auth failed: code=${result.error.code} http=${result.error.httpStatus} msg=${result.error.message}")
+                    }
                     _uiState.update {
-                        it.copy(submitting = false, failure = result.error.toAuthFailure(state.mode))
+                        it.copy(submitting = false, failure = failure)
                     }
                 }
             }
@@ -180,7 +189,8 @@ private fun ApiError.toAuthFailure(mode: AuthMode): AuthFailure = when (this) {
                 "Check your email and password and try again."
             }
             ApiErrorCodes.RATE_LIMIT_EXCEEDED -> "Too many attempts. Wait a moment and try again."
-            else -> "Something went wrong. Please try again."
+            ApiErrorCodes.SERVER_INTERNAL -> "The server encountered an error. Please try again later."
+            else -> "Something went wrong ($code). Please try again."
         },
         requestId = requestId,
     )

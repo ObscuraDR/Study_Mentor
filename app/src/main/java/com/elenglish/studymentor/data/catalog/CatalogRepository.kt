@@ -132,14 +132,21 @@ class CatalogRepository @Inject constructor(
             if (cached.isEmpty()) {
                 result
             } else {
-                ApiResult.Success(
-                    CatalogData(
-                        value = cached,
-                        origin = DataOrigin.Cached,
-                        cachedAtEpochMillis = cacheMetadataDao.findByKey(cacheKey)
-                            ?.fetchedAtEpochMillis,
-                    ),
-                )
+                val metadata = cacheMetadataDao.findByKey(cacheKey)
+                val ageMillis = timeSource.nowEpochMillis() - (metadata?.fetchedAtEpochMillis ?: 0L)
+                // Cache beyond this threshold is considered stale and not used as
+                // a fallback — showing data this old without warning is misleading.
+                if (ageMillis > CACHE_TTL_MILLIS) {
+                    result
+                } else {
+                    ApiResult.Success(
+                        CatalogData(
+                            value = cached,
+                            origin = DataOrigin.Cached,
+                            cachedAtEpochMillis = metadata?.fetchedAtEpochMillis,
+                        ),
+                    )
+                }
             }
         } else {
             result
@@ -159,14 +166,24 @@ class CatalogRepository @Inject constructor(
             if (cached == null) {
                 result
             } else {
-                ApiResult.Success(
-                    CatalogData(
-                        value = cached,
-                        origin = DataOrigin.Cached,
-                        cachedAtEpochMillis = cacheKey
-                            ?.let { cacheMetadataDao.findByKey(it)?.fetchedAtEpochMillis },
-                    ),
-                )
+                // When there is no cache key we cannot check freshness, so we accept
+                // whatever is in the local store. This applies to single-item lookups
+                // (getSubject, getTopic, getLesson) that find their row by id rather
+                // than by the collection's cache key.
+                val metadata = cacheKey?.let { cacheMetadataDao.findByKey(it) }
+                val isStale = cacheKey != null && timeSource.nowEpochMillis() -
+                    (metadata?.fetchedAtEpochMillis ?: 0L) > CACHE_TTL_MILLIS
+                if (isStale) {
+                    result
+                } else {
+                    ApiResult.Success(
+                        CatalogData(
+                            value = cached,
+                            origin = DataOrigin.Cached,
+                            cachedAtEpochMillis = metadata?.fetchedAtEpochMillis,
+                        ),
+                    )
+                }
             }
         } else {
             result
@@ -177,6 +194,14 @@ class CatalogRepository @Inject constructor(
         const val KEY_SUBJECTS = "catalog.subjects"
         fun keyTopics(subjectId: String) = "catalog.topics.$subjectId"
         fun keyLessons(topicId: String) = "catalog.lessons.$topicId"
+
+        /**
+         * Maximum age of a cached response that is still acceptable as a fallback
+         * when the device is offline. Beyond this, the cache is considered stale
+         * and the original network error is surfaced instead — showing days-old
+         * data without a visible warning would be misleading.
+         */
+        private const val CACHE_TTL_MILLIS = 24L * 60 * 60 * 1000 // 24 hours
     }
 }
 
