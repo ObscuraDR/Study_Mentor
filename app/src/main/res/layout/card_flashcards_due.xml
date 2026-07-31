@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/flashcards_card"
+    style="@style/StudyMentorCard"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="@dimen/section_icon_size"
+                android:layout_height="@dimen/section_icon_size"
+                android:src="@drawable/ic_style"
+                app:tint="?attr/colorPrimary"
+                android:contentDescription="@null" />
+
+            <TextView
+                style="@style/TextAppearance.TitleMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_xs"
+                android:text="@string/home_flashcards_due_heading"
+                android:textColor="?android:attr/textColorPrimary"
+                android:accessibilityHeading="true" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/flashcards_action_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_sm"
+            android:minHeight="@dimen/touch_list_row"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="?attr/selectableItemBackground">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_style"
+                app:tint="?attr/colorPrimary"
+                android:contentDescription="@null" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_md"
+                android:layout_weight="1"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/flashcards_deck_name"
+                    style="@style/TextAppearance.TitleMedium"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:maxLines="2"
+                    android:ellipsize="end" />
+                <TextView
+                    android:id="@+id/flashcards_due_count"
+                    style="@style/TextAppearance.BodyMedium"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/light_text_secondary"
+                    android:maxLines="1" />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_chevron_right"
+                app:tint="@color/light_text_secondary"
+                android:contentDescription="@null" />
+        </LinearLayout>
+
+        <!-- Error (hidden) -->
+        <LinearLayout
+            android:id="@+id/flashcards_error_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_sm"
+            android:orientation="vertical"
+            android:visibility="gone">
+            <TextView
+                android:id="@+id/flashcards_error_text"
+                style="@style/TextAppearance.BodyMedium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/feedback_error" />
+            <TextView
+                android:id="@+id/flashcards_error_ref"
+                style="@style/TextAppearance.LabelSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/light_text_secondary" />
+            <Button
+                android:id="@+id/flashcards_retry_button"
+                style="@style/StudyMentorButton.Outlined"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_sm"
+                android:text="@string/action_retry" />
+        </LinearLayout>
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

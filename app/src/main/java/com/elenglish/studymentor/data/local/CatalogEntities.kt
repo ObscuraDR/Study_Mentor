@@ -1,13 +1,14 @@
 package com.elenglish.studymentor.data.local
 
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
 /**
  * Cached catalog rows.
  *
- * These are **non-authoritative copies** of backend data, kept so the app can
+ * These are **non-authoritative copies** of the real data, kept so the app can
  * show something useful while offline. They never become the source of truth.
  *
  * [position] is the index the row held in the backend's response. The backend
@@ -24,9 +25,22 @@ data class CachedSubjectEntity(
     val position: Int,
 )
 
+/**
+ * Foreign keys are real referential-integrity constraints. The cache is
+ * a non-authoritative snapshot of the backend — orphan topics or lessons
+ * are a data-integrity bug, not expected behaviour.
+ */
 @Entity(
     tableName = "cached_topics",
     indices = [Index("subjectId")],
+    foreignKeys = [
+        ForeignKey(
+            entity = CachedSubjectEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["subjectId"],
+            onDelete = ForeignKey.CASCADE,
+        ),
+    ],
 )
 data class CachedTopicEntity(
     @PrimaryKey val id: String,
@@ -40,6 +54,14 @@ data class CachedTopicEntity(
 @Entity(
     tableName = "cached_lessons",
     indices = [Index("topicId")],
+    foreignKeys = [
+        ForeignKey(
+            entity = CachedTopicEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["topicId"],
+            onDelete = ForeignKey.CASCADE,
+        ),
+    ],
 )
 data class CachedLessonEntity(
     @PrimaryKey val id: String,

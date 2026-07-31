@@ -1,0 +1,2 @@
+CREATE DATABASE ai_study_mentor_dev OWNER ai_study_mentor;
+CREATE DATABASE ai_study_mentor_test OWNER ai_study_mentor;

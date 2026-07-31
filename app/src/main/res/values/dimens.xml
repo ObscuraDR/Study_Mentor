@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Spacing scale — mirrors StudyMentorSpacing from Spacing.kt -->
+    <dimen name="spacing_xs">4dp</dimen>
+    <dimen name="spacing_sm">8dp</dimen>
+    <dimen name="spacing_md">16dp</dimen>
+    <dimen name="spacing_lg">24dp</dimen>
+    <dimen name="spacing_xl">32dp</dimen>
+    <dimen name="spacing_xxl">48dp</dimen>
+
+    <!-- Touch targets — mirrors StudyMentorTouchTargets -->
+    <dimen name="touch_minimum">48dp</dimen>
+    <dimen name="touch_button">48dp</dimen>
+    <dimen name="touch_list_row">48dp</dimen>
+    <dimen name="touch_icon">48dp</dimen>
+
+    <!-- Home-specific dimensions -->
+    <dimen name="completion_bar_height">8dp</dimen>
+    <dimen name="section_icon_size">22dp</dimen>
+    <dimen name="card_elevation_default">2dp</dimen>
+</resources>

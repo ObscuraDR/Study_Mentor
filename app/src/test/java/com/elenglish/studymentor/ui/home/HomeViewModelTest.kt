@@ -9,6 +9,7 @@ import com.elenglish.studymentor.data.catalog.CatalogRepository
 import com.elenglish.studymentor.data.flashcard.FlashcardRepository
 import com.elenglish.studymentor.data.learning.LearningRepository
 import com.elenglish.studymentor.data.local.StudyMentorDatabase
+import com.elenglish.studymentor.data.account.AccountRepository
 import com.elenglish.studymentor.testing.ApiTestHarness
 import com.elenglish.studymentor.testing.Fixtures
 import com.elenglish.studymentor.testing.awaitCondition
@@ -60,6 +61,7 @@ class HomeViewModelTest {
             ApplicationProvider.getApplicationContext(),
             StudyMentorDatabase::class.java,
         ).allowMainThreadQueries().build()
+        database.openHelper.writableDatabase.execSQL("PRAGMA foreign_keys = OFF")
         catalogRepository = CatalogRepository(
             catalogApi = harness.catalogApi,
             catalogDao = database.catalogDao(),
@@ -89,7 +91,12 @@ class HomeViewModelTest {
         database.close()
     }
 
-    private fun newViewModel() = HomeViewModel(learningRepository, catalogRepository, flashcardRepository)
+    private fun newViewModel() = HomeViewModel(
+        learningRepository = learningRepository,
+        catalogRepository = catalogRepository,
+        flashcardRepository = flashcardRepository,
+        accountRepository = AccountRepository(harness.accountApi, harness.json),
+    )
 
     private fun respondByStatus(routes: Map<String, Pair<Int, String>>) {
         harness.server.dispatcher = object : Dispatcher() {

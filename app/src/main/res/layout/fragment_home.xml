@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_md">
+
+        <!-- Greeting header section -->
+        <include layout="@layout/section_home_greeting" />
+
+        <!-- Progress section — loading / content / error -->
+        <FrameLayout
+            android:id="@+id/progress_section_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_lg" />
+
+        <!-- Continue Learning section — primary action card -->
+        <FrameLayout
+            android:id="@+id/continue_learning_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_lg" />
+
+        <!-- Flashcards Due section — secondary card -->
+        <FrameLayout
+            android:id="@+id/flashcards_due_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_lg" />
+
+        <!-- Nothing Else section -->
+        <FrameLayout
+            android:id="@+id/nothing_else_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_lg" />
+
+    </LinearLayout>
+</ScrollView>

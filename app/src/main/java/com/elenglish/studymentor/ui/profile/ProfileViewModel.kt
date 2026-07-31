@@ -1,6 +1,7 @@
 package com.elenglish.studymentor.ui.profile
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.elenglish.studymentor.core.network.ApiError
 import com.elenglish.studymentor.core.network.ApiErrorCodes
@@ -76,16 +77,30 @@ data class ProfileUiState(
     val dailyGoalError: String?
         get() {
             val parsed = dailyGoalInput.toIntOrNull()
-                ?: return "Enter a whole number"
+                ?: return "Enter a whole number."
             return if (parsed !in SharedSettings.MIN_DAILY_GOAL_XP..SharedSettings.MAX_DAILY_GOAL_XP) {
-                "Choose between ${SharedSettings.MIN_DAILY_GOAL_XP} and ${SharedSettings.MAX_DAILY_GOAL_XP}"
+                "Choose between ${SharedSettings.MIN_DAILY_GOAL_XP} and ${SharedSettings.MAX_DAILY_GOAL_XP}."
             } else {
                 null
             }
         }
 
     val canSaveProfile: Boolean
-        get() = profileDirty && !savingProfile && displayNameInput.isNotBlank()
+        get() = profileDirty && !savingProfile &&
+            displayNameInput.trim().length in MIN_DISPLAY_NAME_LENGTH..MAX_DISPLAY_NAME_LENGTH &&
+            !containsInvalidCharacters(displayNameInput)
+
+    val displayNameError: String?
+        get() {
+            val trimmed = displayNameInput.trim()
+            return when {
+                trimmed.isEmpty() -> "Name cannot be empty."
+                containsInvalidCharacters(displayNameInput) -> "Name contains unsupported characters."
+                trimmed.length !in MIN_DISPLAY_NAME_LENGTH..MAX_DISPLAY_NAME_LENGTH ->
+                    "Enter between $MIN_DISPLAY_NAME_LENGTH and $MAX_DISPLAY_NAME_LENGTH characters."
+                else -> null
+            }
+        }
 
     val canSaveSettings: Boolean
         get() = settingsDirty && !savingSettings && dailyGoalError == null
@@ -99,6 +114,9 @@ class ProfileViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(ProfileUiState())
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
+
+    /** Java-friendly LiveData. */
+    val uiStateLiveData by lazy { _uiState.asLiveData() }
 
     init {
         load()
@@ -260,6 +278,17 @@ private fun ApiError.toLoadFailure(): ProfileLoadState.Failed = when (this) {
     is ApiError.Backend -> ProfileLoadState.Failed(ProfileMessageKind.Generic, requestId)
     is ApiError.Unexpected -> ProfileLoadState.Failed(ProfileMessageKind.Generic, requestId)
 }
+
+private const val MIN_DISPLAY_NAME_LENGTH = 1
+private const val MAX_DISPLAY_NAME_LENGTH = 50
+
+/**
+ * Returns true when [value] contains characters the contract forbids:
+ * control characters (U+0000–001F, U+007F) and zero-width joiner abuse patterns.
+ * Emoji and most Unicode are intentionally allowed — the backend validates further.
+ */
+private fun containsInvalidCharacters(value: String): Boolean =
+    value.any { it.code in 0x0000..0x001F || it.code == 0x007F }
 
 private fun ApiError.toSaveMessage(): ProfileMessage = when (this) {
     is ApiError.Network -> ProfileMessage(

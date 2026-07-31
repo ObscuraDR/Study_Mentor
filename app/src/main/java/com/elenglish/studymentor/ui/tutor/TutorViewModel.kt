@@ -2,6 +2,7 @@ package com.elenglish.studymentor.ui.tutor
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.elenglish.studymentor.core.network.ApiError
 import com.elenglish.studymentor.core.network.ApiErrorCodes
@@ -70,6 +71,9 @@ class TutorViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(TutorUiState())
     val uiState: StateFlow<TutorUiState> = _uiState.asStateFlow()
+
+    /** Java-friendly LiveData. */
+    val uiStateLiveData by lazy { _uiState.asLiveData() }
 
     /** Held so a retry resends the identical question under the same key. */
     private var pendingMessage: PendingTutorMessage? = null

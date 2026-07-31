@@ -27,6 +27,7 @@ enum class SessionStatus { Restoring, Guest, Authenticated }
 data class AppUiState(
     val themeMode: ThemeMode = ThemeMode.System,
     val sessionStatus: SessionStatus = SessionStatus.Restoring,
+    val onboardingCompleted: Boolean = false,
 ) {
     val isAuthenticated: Boolean get() = sessionStatus == SessionStatus.Authenticated
 }
@@ -36,10 +37,11 @@ class AppViewModel @Inject constructor(
     preferences: AppPreferencesRepository,
     sessionStateHolder: SessionStateHolder,
     private val sessionRepository: SessionRepository,
+    private val appPreferences: AppPreferencesRepository,
 ) : ViewModel() {
 
     val uiState: StateFlow<AppUiState> =
-        combine(preferences.themeMode, sessionStateHolder.state) { themeMode, session ->
+        combine(preferences.themeMode, sessionStateHolder.state, preferences.onboardingCompleted) { themeMode, session, onboardingCompleted ->
             AppUiState(
                 themeMode = themeMode,
                 sessionStatus = when (session) {
@@ -47,6 +49,7 @@ class AppViewModel @Inject constructor(
                     SessionState.NotAuthenticated -> SessionStatus.Guest
                     is SessionState.Authenticated -> SessionStatus.Authenticated
                 },
+                onboardingCompleted = onboardingCompleted,
             )
         }.stateIn(
             scope = viewModelScope,
@@ -55,10 +58,11 @@ class AppViewModel @Inject constructor(
         )
 
     init {
-        // Ask the backend whether the stored refresh token still represents a
-        // live session. Until it answers, the app stays in Restoring and shows
-        // neither the guest nor the authenticated shell.
         viewModelScope.launch { sessionRepository.restoreSession() }
+    }
+
+    fun completeOnboarding() {
+        viewModelScope.launch { appPreferences.setOnboardingCompleted() }
     }
 
     private companion object {

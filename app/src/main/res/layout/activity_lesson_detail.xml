@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ProgressBar
+        android:id="@+id/loading_indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone" />
+
+    <ScrollView
+        android:id="@+id/detail_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_md">
+
+        <!-- Cached banner -->
+        <LinearLayout
+            android:id="@+id/cached_banner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_cloud"
+                app:tint="@color/light_text_secondary"
+                android:contentDescription="@null" />
+
+            <TextView
+                style="@style/TextAppearance.BodyMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_sm"
+                android:text="@string/catalog_showing_saved_copy"
+                android:textColor="@color/light_text_secondary" />
+        </LinearLayout>
+
+        <!-- Lesson content card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/lesson_content_card"
+            style="@style/StudyMentorCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/lesson_title"
+                    style="@style/TextAppearance.HeadlineMedium"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:accessibilityHeading="true" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_duration"
+                        style="@style/Widget.MaterialComponents.Chip.Action"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="false"
+                        android:enabled="false"
+                        android:textAppearance="@style/TextAppearance.LabelMedium" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_difficulty"
+                        style="@style/Widget.MaterialComponents.Chip.Action"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_sm"
+                        android:clickable="false"
+                        android:enabled="false"
+                        android:visibility="gone"
+                        android:textAppearance="@style/TextAppearance.LabelMedium" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/lesson_description"
+                    style="@style/TextAppearance.BodyLarge"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:textColor="@color/light_text_secondary" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Supporting actions -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_lg"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/quiz_button"
+                style="@style/StudyMentorButton.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/quiz_open_action" />
+
+            <Button
+                android:id="@+id/flashcards_button"
+                style="@style/StudyMentorButton.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_sm"
+                android:text="@string/flashcards_open_action" />
+
+            <Button
+                android:id="@+id/tutor_button"
+                style="@style/StudyMentorButton.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_sm"
+                android:text="@string/tutor_open_action" />
+        </LinearLayout>
+
+        <!-- Completion section -->
+        <LinearLayout
+            android:id="@+id/completion_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_lg"
+            android:orientation="vertical">
+
+            <!-- Mark complete button -->
+            <Button
+                android:id="@+id/mark_complete_button"
+                style="@style/StudyMentorButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/completion_mark_complete" />
+
+            <!-- Accepted state -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/completion_accepted_group"
+                style="@style/StudyMentorCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_check_circle"
+                            app:tint="@color/feedback_success"
+                            android:contentDescription="@null" />
+
+                        <TextView
+                            android:id="@+id/completion_result_text"
+                            style="@style/TextAppearance.TitleMedium"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/spacing_xs"
+                            android:textColor="@color/feedback_success"
+                            android:text="@string/completion_recorded" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/completion_xp_text"
+                        style="@style/TextAppearance.BodyLarge"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_sm" />
+
+                    <LinearLayout
+                        android:id="@+id/completion_progress_group"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_sm"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <!-- Progress rows -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+                            <TextView
+                                style="@style/TextAppearance.BodyMedium"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/progress_lessons"
+                                android:textColor="@color/light_text_secondary" />
+                            <TextView
+                                android:id="@+id/progress_lessons_row"
+                                style="@style/TextAppearance.TitleSmall"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_xs"
+                            android:orientation="horizontal">
+                            <TextView
+                                style="@style/TextAppearance.BodyMedium"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/progress_topics"
+                                android:textColor="@color/light_text_secondary" />
+                            <TextView
+                                android:id="@+id/progress_topics_row"
+                                style="@style/TextAppearance.TitleSmall"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_xs"
+                            android:orientation="horizontal">
+                            <TextView
+                                style="@style/TextAppearance.BodyMedium"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/progress_subjects"
+                                android:textColor="@color/light_text_secondary" />
+                            <TextView
+                                android:id="@+id/progress_subjects_row"
+                                style="@style/TextAppearance.TitleSmall"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Failed state -->
+            <LinearLayout
+                android:id="@+id/completion_failed_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/completion_failed_text"
+                    style="@style/TextAppearance.BodyMedium"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/feedback_error" />
+
+                <TextView
+                    android:id="@+id/completion_failed_reference"
+                    style="@style/TextAppearance.LabelSmall"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/light_text_secondary"
+                    android:visibility="gone" />
+
+                <Button
+                    android:id="@+id/completion_retry_button"
+                    style="@style/StudyMentorButton.Outlined"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:text="@string/action_retry"
+                    android:visibility="gone" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+    </ScrollView>
+</FrameLayout>

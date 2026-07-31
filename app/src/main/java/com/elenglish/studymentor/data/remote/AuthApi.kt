@@ -7,6 +7,7 @@ import com.elenglish.studymentor.data.remote.dto.RefreshedSessionDto
 import com.elenglish.studymentor.data.remote.dto.RegisterRequestDto
 import com.elenglish.studymentor.data.remote.dto.SessionDto
 import com.elenglish.studymentor.data.remote.dto.UserDto
+import com.elenglish.studymentor.data.remote.dto.PasswordResetRequestDto
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -40,4 +41,7 @@ interface AuthApi {
 
     @GET("auth/me")
     suspend fun me(): Response<ApiEnvelope<UserDto>>
+
+    @POST("auth/password-reset/request")
+    suspend fun requestPasswordReset(@Body body: PasswordResetRequestDto): Response<Unit>
 }

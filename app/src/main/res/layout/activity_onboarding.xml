@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="?android:attr/colorBackground"
+    android:padding="@dimen/spacing_lg">
+
+    <!-- Skip button -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/onboarding_skip"
+            style="@style/StudyMentorButton.Outlined"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:minHeight="@dimen/touch_button"
+            android:text="@string/onboarding_skip" />
+    </FrameLayout>
+
+    <!-- Pager content (ViewPager2) -->
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/onboarding_pager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <!-- Bottom section: dots + action button -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <!-- Dots indicator -->
+        <LinearLayout
+            android:id="@+id/dots_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center" />
+
+        <!-- Next / Get started button -->
+        <Button
+            android:id="@+id/onboarding_action"
+            style="@style/StudyMentorButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_md"
+            android:text="@string/onboarding_next" />
+    </LinearLayout>
+
+</LinearLayout>

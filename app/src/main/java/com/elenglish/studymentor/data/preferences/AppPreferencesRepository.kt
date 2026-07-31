@@ -32,6 +32,14 @@ class AppPreferencesRepository @Inject constructor(
         dataStore.edit { preferences -> preferences[KEY_THEME_MODE] = mode.storageValue }
     }
 
+    val onboardingCompleted: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[KEY_ONBOARDING_COMPLETED] ?: false
+    }
+
+    suspend fun setOnboardingCompleted() {
+        dataStore.edit { preferences -> preferences[KEY_ONBOARDING_COMPLETED] = true }
+    }
+
     /**
      * Daily reminder settings.
      *
@@ -57,6 +65,7 @@ class AppPreferencesRepository @Inject constructor(
 
     private companion object {
         val KEY_THEME_MODE = stringPreferencesKey("theme_mode")
+        val KEY_ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
         val KEY_REMINDER_ENABLED = booleanPreferencesKey("reminder_enabled")
         val KEY_REMINDER_HOUR = intPreferencesKey("reminder_hour")
         val KEY_REMINDER_MINUTE = intPreferencesKey("reminder_minute")

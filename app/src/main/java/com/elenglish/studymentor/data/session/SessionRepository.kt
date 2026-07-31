@@ -10,6 +10,7 @@ import com.elenglish.studymentor.core.session.SessionStateHolder
 import com.elenglish.studymentor.data.remote.AuthApi
 import com.elenglish.studymentor.data.remote.dto.AndroidRefreshRequestDto
 import com.elenglish.studymentor.data.remote.dto.LoginRequestDto
+import com.elenglish.studymentor.data.remote.dto.PasswordResetRequestDto
 import com.elenglish.studymentor.data.remote.dto.RegisterRequestDto
 import com.elenglish.studymentor.data.remote.dto.SessionDto
 import com.elenglish.studymentor.domain.model.AuthUser
@@ -203,6 +204,10 @@ class SessionRepository @Inject constructor(
     /** Revokes every session family for the user, then clears local state. */
     suspend fun logoutAll(): ApiResult<Unit> =
         safeEmptyApiCall(json) { authApi.logoutAll() }.also { endSessionLocally() }
+
+    /** Sends a password-reset email. The backend always returns 200 to avoid user enumeration. */
+    suspend fun requestPasswordReset(email: String): ApiResult<Unit> =
+        safeEmptyApiCall(json) { authApi.requestPasswordReset(PasswordResetRequestDto(email)) }
 
     /**
      * Drops all local session state.

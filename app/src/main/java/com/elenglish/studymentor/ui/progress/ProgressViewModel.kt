@@ -1,6 +1,7 @@
 package com.elenglish.studymentor.ui.progress
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.elenglish.studymentor.core.network.ApiResult
 import com.elenglish.studymentor.data.learning.LearningRepository
@@ -34,6 +35,9 @@ class ProgressViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow<ProgressUiState>(ProgressUiState.Loading)
     val uiState: StateFlow<ProgressUiState> = _uiState.asStateFlow()
+
+    /** Java-friendly LiveData. */
+    val uiStateLiveData by lazy { _uiState.asLiveData() }
 
     init {
         load()

@@ -8,7 +8,11 @@ import com.elenglish.studymentor.core.session.SessionStateHolder
 import com.elenglish.studymentor.data.remote.AccountApi
 import com.elenglish.studymentor.data.remote.AuthApi
 import com.elenglish.studymentor.data.remote.CatalogApi
+import com.elenglish.studymentor.data.remote.CampaignApi
+import com.elenglish.studymentor.data.remote.EngagementApi
+import com.elenglish.studymentor.data.remote.StreakRecoveryApi
 import com.elenglish.studymentor.data.remote.FlashcardApi
+import com.elenglish.studymentor.data.remote.FullProductApi
 import com.elenglish.studymentor.data.remote.LearningApi
 import com.elenglish.studymentor.data.remote.QuizApi
 import com.elenglish.studymentor.data.remote.TutorApi
@@ -72,10 +76,14 @@ class ApiTestHarness(
     val authApi: AuthApi
     val accountApi: AccountApi
     val catalogApi: CatalogApi
+    val campaignApi: CampaignApi
     val learningApi: LearningApi
     val quizApi: QuizApi
     val tutorApi: TutorApi
     val flashcardApi: FlashcardApi
+    val engagementApi: EngagementApi
+    val streakRecoveryApi: StreakRecoveryApi
+    val fullProductApi: FullProductApi
 
     init {
         server.start()
@@ -99,10 +107,14 @@ class ApiTestHarness(
         authApi = retrofit.create(AuthApi::class.java)
         accountApi = retrofit.create(AccountApi::class.java)
         catalogApi = retrofit.create(CatalogApi::class.java)
+        campaignApi = retrofit.create(CampaignApi::class.java)
         learningApi = retrofit.create(LearningApi::class.java)
         quizApi = retrofit.create(QuizApi::class.java)
         tutorApi = retrofit.create(TutorApi::class.java)
         flashcardApi = retrofit.create(FlashcardApi::class.java)
+        engagementApi = retrofit.create(EngagementApi::class.java)
+        streakRecoveryApi = retrofit.create(StreakRecoveryApi::class.java)
+        fullProductApi = retrofit.create(FullProductApi::class.java)
 
         sessionRepository = SessionRepository(
             authApiProvider = { authApi },
@@ -295,6 +307,81 @@ object Fixtures {
     fun progressEnvelope(totalXp: Int = 10): String =
         """{"data":${progress(totalXp = totalXp)},"meta":{"requestId":"$REQUEST_ID"}}"""
 
+    /**
+     * A backend-shaped `GET /me/engagement` response. [achievements] defaults
+     * to empty so a fresh learner's honest empty state can be exercised
+     * without extra ceremony.
+     */
+    fun engagement(
+        totalXp: Int = 100,
+        level: Int = 2,
+        currentLevelXp: Int = 100,
+        nextLevelThreshold: Int = 400,
+        completionPercentage: Double = 0.0,
+        streak: Int = 3,
+        achievements: List<String> = emptyList(),
+    ): String {
+        val achievementsJson = achievements.joinToString(",") { "\"$it\"" }
+        return """
+            {
+              "totalXp": $totalXp,
+              "level": $level,
+              "currentLevelXp": $currentLevelXp,
+              "nextLevelThreshold": $nextLevelThreshold,
+              "completionPercentage": $completionPercentage,
+              "levelCurveVersion": "level-curve-v1",
+              "timezone": "Asia/Ho_Chi_Minh",
+              "streak": $streak,
+              "achievements": [$achievementsJson],
+              "missions": {
+                "ruleVersion": "engagement-v1",
+                "daily": {
+                  "startsAt": "2026-07-24T00:00:00Z",
+                  "endsAt": "2026-07-25T00:00:00Z",
+                  "templateKey": "daily_complete_lesson",
+                  "objectives": [
+                    { "progress": 0, "target": 1, "completed": false }
+                  ],
+                  "lesson": { "progress": 0, "target": 1, "completed": false },
+                  "quiz": { "progress": 0, "target": 1, "completed": false },
+                  "reviews": { "progress": 2, "target": 5, "completed": false },
+                  "completed": false
+                },
+                "weekly": {
+                  "startsAt": "2026-07-20T00:00:00Z",
+                  "endsAt": "2026-07-27T00:00:00Z",
+                  "templateKey": "weekly_learning_momentum",
+                  "objectives": [
+                    { "progress": 1, "target": 3, "completed": false },
+                    { "progress": 1, "target": 2, "completed": false }
+                  ],
+                  "actions": { "progress": 1, "target": 3, "completed": false },
+                  "days": { "progress": 1, "target": 2, "completed": false },
+                  "completed": false
+                }
+              }
+            }
+        """.trimIndent()
+    }
+
+    fun engagementEnvelope(
+        totalXp: Int = 100,
+        level: Int = 2,
+        currentLevelXp: Int = 100,
+        nextLevelThreshold: Int = 400,
+        streak: Int = 3,
+        achievements: List<String> = emptyList(),
+    ): String = """{"data":${
+        engagement(
+            totalXp = totalXp,
+            level = level,
+            currentLevelXp = currentLevelXp,
+            nextLevelThreshold = nextLevelThreshold,
+            streak = streak,
+            achievements = achievements,
+        )
+    },"meta":{"requestId":"$REQUEST_ID"}}"""
+
     /** [rows] are lessonId to completedAt. Empty by default: no completions yet. */
     fun lessonCompletions(vararg rows: Pair<String, String>): String {
         val items = rows.joinToString(",") { (lessonId, completedAt) ->
@@ -467,6 +554,16 @@ object Fixtures {
           "meta": { "requestId": "$REQUEST_ID" }
         }
     """.trimIndent()
+
+    fun streakRecoveryEligibilityEnvelope(eligible: Boolean = true, reasonCode: String? = null): String {
+        val reason = reasonCode?.let { ",\"reasonCode\":\"$it\"" } ?: ""
+        val missed = if (eligible) ",\"missedLocalDate\":\"2026-03-09\"" else ""
+        return """{"data":{"eligible":$eligible$reason$missed,"policyVersion":"streak-recovery-v1","streak":4},"meta":{"requestId":"$REQUEST_ID"}}"""
+    }
+
+    fun streakRecoveryClaimEnvelope(): String = """{"data":{"status":"accepted","missedLocalDate":"2026-03-09","policyVersion":"streak-recovery-v1","acceptedAt":"2026-03-10T12:00:00Z"},"meta":{"requestId":"$REQUEST_ID"}}"""
+
+    fun campaignEnvelope(): String = """{"data":{"campaignKey":"core-learning-map","campaignVersion":"campaign-v1","catalogVersion":"catalog-v1","accessPolicy":"open-guided","recommendedNodeId":"lesson-1","completedLessons":1,"totalLessons":2,"completionPercentage":50.0,"zones":[{"subjectId":"subject-1","slug":"english","name":"English","displayOrder":1,"state":"active","completedLessons":1,"totalLessons":2,"completionPercentage":50.0,"topics":[{"topicId":"topic-1","slug":"greetings","name":"Greetings","displayOrder":1,"completedLessons":1,"totalLessons":2,"completionPercentage":50.0,"lessons":[{"lessonId":"lesson-0","slug":"hello","title":"Hello","displayOrder":1,"completed":true,"state":"completed"},{"lessonId":"lesson-1","slug":"intro","title":"Intro","displayOrder":2,"completed":false,"state":"recommended"}]}]}]},"meta":{"requestId":"$REQUEST_ID"}}"""
 
     fun error(code: String, message: String = "Failed."): String = """
         {

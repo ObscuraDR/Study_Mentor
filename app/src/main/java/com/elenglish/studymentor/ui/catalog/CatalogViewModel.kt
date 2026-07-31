@@ -2,6 +2,7 @@ package com.elenglish.studymentor.ui.catalog
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.elenglish.studymentor.core.network.ApiError
 import com.elenglish.studymentor.core.network.ApiErrorCodes
@@ -14,13 +15,17 @@ import com.elenglish.studymentor.domain.model.CatalogData
 import com.elenglish.studymentor.domain.model.CompletionResult
 import com.elenglish.studymentor.domain.model.PendingCompletion
 import com.elenglish.studymentor.domain.model.DataOrigin
+import com.elenglish.studymentor.domain.model.Difficulty
 import com.elenglish.studymentor.domain.model.Lesson
 import com.elenglish.studymentor.domain.model.Subject
 import com.elenglish.studymentor.domain.model.Topic
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -64,6 +69,9 @@ class SubjectsViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<CatalogUiState<Subject>>(CatalogUiState.Loading)
     val uiState: StateFlow<CatalogUiState<Subject>> = _uiState.asStateFlow()
 
+    /** Java-friendly LiveData. */
+    val uiStateLiveData by lazy { _uiState.asLiveData() }
+
     init {
         load()
     }
@@ -84,8 +92,14 @@ class TopicsViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<CatalogUiState<Topic>>(CatalogUiState.Loading)
     val uiState: StateFlow<CatalogUiState<Topic>> = _uiState.asStateFlow()
 
+    /** Java-friendly LiveData. */
+    val uiStateLiveData by lazy { _uiState.asLiveData() }
+
     private val _subjectName = MutableStateFlow<String?>(null)
     val subjectName: StateFlow<String?> = _subjectName.asStateFlow()
+
+    /** Java-friendly LiveData for subject name. */
+    val subjectNameLiveData by lazy { _subjectName.asLiveData() }
 
     init {
         load()
@@ -115,19 +129,36 @@ class LessonsViewModel @Inject constructor(
         "topicId is required to list lessons"
     }
 
-    private val _uiState = MutableStateFlow<CatalogUiState<Lesson>>(CatalogUiState.Loading)
-    val uiState: StateFlow<CatalogUiState<Lesson>> = _uiState.asStateFlow()
+    private val _rawState = MutableStateFlow<CatalogUiState<Lesson>>(CatalogUiState.Loading)
+    private val _searchQuery = MutableStateFlow("")
+    private val _difficultyFilter = MutableStateFlow<Difficulty?>(null)
+
+    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
+    val difficultyFilter: StateFlow<Difficulty?> = _difficultyFilter.asStateFlow()
+
+    /**
+     * Filtered view of the raw lesson list. Filtering is purely local — the
+     * full list is fetched once and the query/filter narrow it in memory.
+     */
+    val uiState: StateFlow<CatalogUiState<Lesson>> = combine(
+        _rawState, _searchQuery, _difficultyFilter,
+    ) { raw, query, difficulty ->
+        if (raw !is CatalogUiState.Content) return@combine raw
+        val filtered = raw.items.filter { lesson ->
+            (query.isBlank() || lesson.title.contains(query, ignoreCase = true)) &&
+                (difficulty == null || lesson.difficulty == difficulty)
+        }
+        if (filtered.isEmpty()) CatalogUiState.Empty(raw.origin)
+        else raw.copy(items = filtered)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        initialValue = CatalogUiState.Loading,
+    )
 
     private val _topicName = MutableStateFlow<String?>(null)
     val topicName: StateFlow<String?> = _topicName.asStateFlow()
 
-    /**
-     * Lesson ids the backend confirms as completed.
-     *
-     * This is a visual enhancement, not a gate on anything: a failure to read
-     * it leaves the set empty rather than blocking or erroring the lesson
-     * list, since the list itself remains fully usable without it.
-     */
     private val _completedLessonIds = MutableStateFlow<Set<String>>(emptySet())
     val completedLessonIds: StateFlow<Set<String>> = _completedLessonIds.asStateFlow()
 
@@ -136,7 +167,7 @@ class LessonsViewModel @Inject constructor(
     }
 
     fun load() {
-        loadList(_uiState) { repository.getLessons(topicId) }
+        loadList(_rawState) { repository.getLessons(topicId) }
         viewModelScope.launch {
             val result = repository.getTopic(topicId)
             if (result is ApiResult.Success) _topicName.value = result.value.value.name
@@ -148,6 +179,9 @@ class LessonsViewModel @Inject constructor(
             }
         }
     }
+
+    fun onSearchQueryChange(query: String) { _searchQuery.value = query }
+    fun onDifficultyFilterChange(difficulty: Difficulty?) { _difficultyFilter.value = difficulty }
 
     companion object {
         const val ARG_TOPIC_ID = "topicId"
@@ -214,6 +248,9 @@ class LessonDetailViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow<LessonDetailUiState>(LessonDetailUiState.Loading)
     val uiState: StateFlow<LessonDetailUiState> = _uiState.asStateFlow()
+
+    /** Java-friendly LiveData. */
+    val uiStateLiveData by lazy { _uiState.asLiveData() }
 
     /**
      * The completion awaiting acceptance, held for the lifetime of this screen.

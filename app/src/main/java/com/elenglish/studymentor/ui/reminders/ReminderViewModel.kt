@@ -1,6 +1,7 @@
 package com.elenglish.studymentor.ui.reminders
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.elenglish.studymentor.data.preferences.AppPreferencesRepository
 import com.elenglish.studymentor.data.preferences.ReminderPreference
@@ -36,6 +37,7 @@ class ReminderViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(ReminderUiState())
     val uiState: StateFlow<ReminderUiState> = _uiState.asStateFlow()
+    val uiStateLiveData by lazy { _uiState.asLiveData() }
 
     init {
         viewModelScope.launch {

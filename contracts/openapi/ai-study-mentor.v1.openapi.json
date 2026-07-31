@@ -1,0 +1,4116 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "EL English Mentor API",
+    "version": "1.0.0",
+    "description": "Canonical cross-client contract for authentication, profile, shared settings, the learning catalog, immutable learning events, and server-derived progress."
+  },
+  "servers": [
+    {
+      "url": "https://api.example.com/api/v1",
+      "description": "Production placeholder; deployment configuration supplies the actual hostname."
+    }
+  ],
+  "tags": [
+    {
+      "name": "Authentication"
+    },
+    {
+      "name": "Profile"
+    },
+    {
+      "name": "Settings"
+    },
+    {
+      "name": "Progress"
+    },
+    {
+      "name": "Engagement",
+      "description": "Read-only, backend-authoritative learning engagement projections."
+    },
+    {
+      "name": "Learning events"
+    },
+    {
+      "name": "Learning catalog"
+    },
+    {
+      "name": "Quizzes"
+    },
+    {
+      "name": "Flashcards",
+      "description": "Flashcard decks, cards and server-scheduled spaced repetition."
+    },
+    {
+      "name": "AI Tutor"
+    }
+  ],
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "operationId": "register",
+        "summary": "Register a user and create a session",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ClientPlatform"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/AuthSessionCreated"
+          },
+          "409": {
+            "$ref": "#/components/responses/EmailAlreadyRegistered"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "operationId": "login",
+        "summary": "Authenticate and create a session",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ClientPlatform"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AuthSession"
+          },
+          "401": {
+            "$ref": "#/components/responses/InvalidCredentials"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "operationId": "refreshSession",
+        "summary": "Rotate a refresh session and return a new access token",
+        "description": "For `web`, the request body MUST be omitted and the refresh token is supplied only by a Secure, HttpOnly, SameSite cookie. For `android`, the request body is required and contains the refresh token obtained from secure device storage. A successful Web response never includes a refresh token in JSON; the rotated token is set only in Set-Cookie. A successful Android response includes the rotated refresh token in its JSON body for storage in a Keystore-backed encrypted store.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ClientPlatform"
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AndroidRefreshRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/RefreshedSession"
+          },
+          "401": {
+            "$ref": "#/components/responses/RefreshRejected"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "operationId": "logoutCurrentSession",
+        "summary": "Revoke the current refresh-token family",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ClientPlatform"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Current session revoked. Web clients also receive a clearing Set-Cookie header."
+          },
+          "401": {
+            "$ref": "#/components/responses/SessionExpired"
+          }
+        }
+      }
+    },
+    "/auth/logout-all": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "operationId": "logoutAllSessions",
+        "summary": "Revoke all active refresh-token families for the authenticated user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ClientPlatform"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "All sessions revoked."
+          },
+          "401": {
+            "$ref": "#/components/responses/SessionExpired"
+          }
+        }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "tags": [
+          "Authentication"
+        ],
+        "operationId": "getCurrentUser",
+        "summary": "Get the authenticated user identity",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/CurrentUser"
+          },
+          "401": {
+            "$ref": "#/components/responses/SessionExpired"
+          }
+        }
+      }
+    },
+    "/me/profile": {
+      "get": {
+        "tags": [
+          "Profile"
+        ],
+        "operationId": "getMyProfile",
+        "summary": "Get the authenticated user's profile",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Profile"
+          },
+          "401": {
+            "$ref": "#/components/responses/SessionExpired"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Profile"
+        ],
+        "operationId": "updateMyProfile",
+        "summary": "Update the authenticated user's profile",
+        "description": "The caller must send the profile revision returned by GET as If-Match. A 409 response means the profile changed on another client and must be re-read before retrying.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Profile"
+          },
+          "401": {
+            "$ref": "#/components/responses/SessionExpired"
+          },
+          "409": {
+            "$ref": "#/components/responses/RevisionConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          }
+        }
+      }
+    },
+    "/me/settings": {
+      "get": {
+        "tags": [
+          "Settings"
+        ],
+        "operationId": "getMySettings",
+        "summary": "Get minimal synchronized learning settings",
+        "description": "Theme, sound, reduced-motion, local push permission, and other device presentation state are intentionally not part of this initial synchronized contract.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Settings"
+          },
+          "401": {
+            "$ref": "#/components/responses/SessionExpired"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Settings"
+        ],
+        "operationId": "replaceMySettings",
+        "summary": "Replace minimal synchronized learning settings",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSettingsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Settings"
+          },
+          "401": {
+            "$ref": "#/components/responses/SessionExpired"
+          },
+          "409": {
+            "$ref": "#/components/responses/RevisionConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          }
+        }
+      }
+    },
+    "/me/progress": {
+      "get": {
+        "tags": [
+          "Progress"
+        ],
+        "operationId": "getMyProgress",
+        "summary": "Get the minimal server-authoritative progress read model",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ProgressSummary"
+          },
+          "401": {
+            "$ref": "#/components/responses/SessionExpired"
+          }
+        }
+      }
+    },
+    "/me/engagement": {
+      "get": {
+        "tags": [
+          "Engagement"
+        ],
+        "operationId": "getMyEngagement",
+        "summary": "Get backend-derived XP, level, streak, private achievements, and missions",
+        "description": "Read-only projection. Clients must not calculate, persist, or submit engagement state.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Engagement"
+          },
+          "401": {
+            "$ref": "#/components/responses/SessionExpired"
+          }
+        }
+      }
+    },
+    "/me/campaign": {
+      "get": {
+        "tags": ["Engagement"],
+        "operationId": "getMyCampaign",
+        "summary": "Get the private backend-derived learning campaign map",
+        "description": "Read-only deterministic map over active catalog records and accepted lesson completions. The catalog remains fully open; recommendedNodeId is guidance only and is not a lock, reward, or mastery claim.",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "$ref": "#/components/responses/Campaign" },
+          "401": { "$ref": "#/components/responses/SessionExpired" }
+        }
+      }
+    },
+    "/me/streak-recovery": {
+      "get": {
+        "tags": ["Engagement"],
+        "operationId": "getMyStreakRecoveryEligibility",
+        "summary": "Get private server-derived streak recovery eligibility",
+        "description": "Read-only private eligibility. The response never exposes source events, recovery history, or client-calculated streak state.",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "$ref": "#/components/responses/StreakRecoveryEligibility" },
+          "401": { "$ref": "#/components/responses/SessionExpired" }
+        }
+      }
+    },
+    "/me/streak-recoveries": {
+      "post": {
+        "tags": ["Engagement"],
+        "operationId": "claimMyStreakRecovery",
+        "summary": "Claim one eligible private streak recovery",
+        "description": "Learner-triggered, server-authoritative mutation. It accepts no request body and no client-provided date, streak, timezone, evidence, XP, or reward. An Idempotency-Key retry returns the original accepted result.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "$ref": "#/components/parameters/IdempotencyKey" }],
+        "responses": {
+          "201": { "$ref": "#/components/responses/StreakRecoveryClaimCreated" },
+          "200": { "$ref": "#/components/responses/StreakRecoveryClaimReplay" },
+          "401": { "$ref": "#/components/responses/SessionExpired" },
+          "409": { "$ref": "#/components/responses/StreakRecoveryUnavailable" },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      }
+    },
+    "/me/lesson-completions": {
+      "get": {
+        "tags": [
+          "Progress"
+        ],
+        "operationId": "listMyLessonCompletions",
+        "summary": "List the authenticated user's completed lessons",
+        "description": "Derived exclusively from accepted immutable learning events; there is no separate completion authority. completedAt is the occurredAt of the earliest accepted lesson.completed event for that lesson. Completing the same lesson again does not change completedAt and does not add a second entry.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/LessonCompletions"
+          },
+          "401": {
+            "$ref": "#/components/responses/SessionExpired"
+          }
+        }
+      }
+    },
+    "/subjects": {
+      "get": {
+        "tags": [
+          "Learning catalog"
+        ],
+        "operationId": "listSubjects",
+        "summary": "List active subjects in display order",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Subjects"
+          },
+          "401": {
+            "$ref": "#/components/responses/SessionExpired"
+          }
+        }
+      }
+    },
+    "/subjects/{subjectId}": {
+      "get": {
+        "tags": [
+          "Learning catalog"
+        ],
+        "operationId": "getSubject",
+        "summary": "Get one active subject",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/SubjectId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Subject"
+          },
+          "401": {
+            "$ref": "#/components/responses/SessionExpired"
+          },
+          "404": {
+            "$ref": "#/components/responses/LearningNotFound"
+          }
+        }
+      }
+    },
+    "/subjects/{subjectId}/topics": {
+      "get": {
+        "tags": [
+          "Learning catalog"
+        ],
+        "operationId": "listSubjectTopics",
+        "summary": "List active topics for a subject in display order",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/SubjectId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Topics"
+          },
+          "401": {
+            "$ref": "#/components/responses/SessionExpired"
+          },
+          "404": {
+            "$ref": "#/components/responses/LearningNotFound"
+          }
+        }
+      }
+    },
+    "/topics/{topicId}": {
+      "get": {
+        "tags": [
+          "Learning catalog"
+        ],
+        "operationId": "getTopic",
+        "summary": "Get one active topic",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TopicId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Topic"
+          },
+          "401": {
+            "$ref": "#/components/responses/SessionExpired"
+          },
+          "404": {
+            "$ref": "#/components/responses/LearningNotFound"
+          }
+        }
+      }
+    },
+    "/topics/{topicId}/lessons": {
+      "get": {
+        "tags": [
+          "Learning catalog"
+        ],
+        "operationId": "listTopicLessons",
+        "summary": "List active lessons for a topic in display order",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TopicId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Lessons"
+          },
+          "401": {
+            "$ref": "#/components/responses/SessionExpired"
+          },
+          "404": {
+            "$ref": "#/components/responses/LearningNotFound"
+          }
+        }
+      }
+    },
+    "/lessons/{lessonId}": {
+      "get": {
+        "tags": [
+          "Learning catalog"
+        ],
+        "operationId": "getLesson",
+        "summary": "Get one active lesson",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/LessonId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Lesson"
+          },
+          "401": {
+            "$ref": "#/components/responses/SessionExpired"
+          },
+          "404": {
+            "$ref": "#/components/responses/LearningNotFound"
+          }
+        }
+      }
+    },
+    "/learning-events": {
+      "post": {
+        "tags": [
+          "Learning events"
+        ],
+        "operationId": "appendLearningEvent",
+        "summary": "Append one immutable completed-learning event and receive canonical progress",
+        "description": "User ownership comes exclusively from the bearer token. This is an immutable learning event. Clients submit only completion intent and allowed event facts; XP is derived from the authoritative lesson by the server and clients must not calculate or claim it. lesson.completed is the only currently accepted event type. The Idempotency-Key header is a client-generated UUIDv7 and can be retried safely. The server accepts an event at most once; the same key and equivalent normalized client payload returns the original canonical result with 200, while reuse with a different payload returns 409.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LearningEventRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/LearningEventReplay"
+          },
+          "201": {
+            "$ref": "#/components/responses/LearningEventAccepted"
+          },
+          "401": {
+            "$ref": "#/components/responses/SessionExpired"
+          },
+          "409": {
+            "$ref": "#/components/responses/IdempotencyConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/InvalidLearningEvent"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
+    "/quizzes": {
+      "get": {
+        "tags": [
+          "Quizzes"
+        ],
+        "operationId": "listQuizzes",
+        "summary": "List active quizzes for one active lesson",
+        "description": "The lessonId query parameter is required. Only active quizzes reachable through the active learning catalog are returned.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/LessonIdQuery"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Quizzes"
+          },
+          "401": {
+            "$ref": "#/components/responses/SessionExpired"
+          },
+          "404": {
+            "$ref": "#/components/responses/QuizNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          }
+        }
+      }
+    },
+    "/quizzes/{quizId}": {
+      "get": {
+        "tags": [
+          "Quizzes"
+        ],
+        "operationId": "getQuiz",
+        "summary": "Get active quiz detail without answer keys",
+        "description": "Question and answer-option ordering is server-defined. Correct answers are never exposed in quiz-detail responses.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/QuizId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Quiz"
+          },
+          "401": {
+            "$ref": "#/components/responses/SessionExpired"
+          },
+          "404": {
+            "$ref": "#/components/responses/QuizNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          }
+        }
+      }
+    },
+    "/quiz-attempts": {
+      "post": {
+        "tags": [
+          "Quizzes"
+        ],
+        "operationId": "submitQuizAttempt",
+        "summary": "Submit one immutable quiz attempt and receive the server-scored result",
+        "description": "User ownership comes exclusively from the bearer token. Clients submit only quizId and selected answer-option IDs. Score, correctness, XP, completion, achievements, and timestamps are server-owned and forbidden in the request. All questions are required. The Idempotency-Key header is user-scoped; an equivalent retry returns the original result with 200 and never creates a duplicate attempt.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuizAttemptRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/QuizAttemptReplay"
+          },
+          "201": {
+            "$ref": "#/components/responses/QuizAttemptAccepted"
+          },
+          "401": {
+            "$ref": "#/components/responses/SessionExpired"
+          },
+          "409": {
+            "$ref": "#/components/responses/QuizIdempotencyConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/InvalidQuizAttempt"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
+    "/ai/tutor-responses": {
+      "post": {
+        "tags": [
+          "AI Tutor"
+        ],
+        "operationId": "generateTutorResponse",
+        "summary": "Generate an AI tutor response for a lesson",
+        "description": "Submits a student message for a specific lesson and receives an AI-generated tutor response. Idempotent via Idempotency-Key header. Replay returns the original stored response. Unknown lesson, invalid payload, rate limit, and provider failures use standard error codes. Refused responses (safety filter) return a successful response with status=refused.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TutorResponseRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/TutorResponseReplay"
+          },
+          "201": {
+            "$ref": "#/components/responses/TutorResponseCreated"
+          },
+          "401": {
+            "$ref": "#/components/responses/SessionExpired"
+          },
+          "404": {
+            "$ref": "#/components/responses/TutorLessonNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/TutorIdempotencyConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "502": {
+            "$ref": "#/components/responses/TutorProviderError"
+          },
+          "504": {
+            "$ref": "#/components/responses/TutorTimeout"
+          }
+        }
+      }
+    },
+    "/flashcard-decks": {
+      "get": {
+        "tags": [
+          "Flashcards"
+        ],
+        "operationId": "listFlashcardDecks",
+        "summary": "List active flashcard decks for one active lesson",
+        "description": "The lessonId query parameter is required. Only active decks reachable through the active learning catalog are returned.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/LessonIdQuery"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/FlashcardDecks"
+          },
+          "401": {
+            "$ref": "#/components/responses/SessionExpired"
+          },
+          "404": {
+            "$ref": "#/components/responses/FlashcardNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          }
+        }
+      }
+    },
+    "/flashcard-decks/{deckId}": {
+      "get": {
+        "tags": [
+          "Flashcards"
+        ],
+        "operationId": "getFlashcardDeck",
+        "summary": "Get one active deck with its cards",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/DeckId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/FlashcardDeck"
+          },
+          "401": {
+            "$ref": "#/components/responses/SessionExpired"
+          },
+          "404": {
+            "$ref": "#/components/responses/FlashcardNotFound"
+          }
+        }
+      }
+    },
+    "/me/flashcard-queue": {
+      "get": {
+        "tags": [
+          "Flashcards"
+        ],
+        "operationId": "getMyFlashcardQueue",
+        "summary": "Get the authenticated learner's review queue for one deck",
+        "description": "Returns each card with its server-derived review state, ordered by dueAt then displayOrder. Cards never reviewed are due immediately at box 1.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/DeckIdQuery"
+          },
+          {
+            "$ref": "#/components/parameters/DueOnlyQuery"
+          },
+          {
+            "$ref": "#/components/parameters/QueueLimitQuery"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/FlashcardQueue"
+          },
+          "401": {
+            "$ref": "#/components/responses/SessionExpired"
+          },
+          "404": {
+            "$ref": "#/components/responses/FlashcardNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          }
+        }
+      }
+    },
+    "/flashcard-reviews": {
+      "post": {
+        "tags": [
+          "Flashcards"
+        ],
+        "operationId": "submitFlashcardReview",
+        "summary": "Submit one immutable review outcome and receive the recalculated schedule",
+        "description": "User ownership comes exclusively from the bearer token. Clients submit only the card, the outcome and when the review happened; box, due date and mastery are derived by the server and must not be calculated or claimed by a client. Flashcard reviews earn no XP. The Idempotency-Key header is a client-generated UUIDv7 and can be retried safely: the same key with an equivalent payload returns the original result with 200, while reuse with a different payload returns 409.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FlashcardReviewRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/FlashcardReviewReplay"
+          },
+          "201": {
+            "$ref": "#/components/responses/FlashcardReviewAccepted"
+          },
+          "401": {
+            "$ref": "#/components/responses/SessionExpired"
+          },
+          "404": {
+            "$ref": "#/components/responses/FlashcardNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/FlashcardIdempotencyConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/InvalidFlashcardReview"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
+    "/me/flashcard-decks/{deckId}/reset": {
+      "post": {
+        "tags": [
+          "Flashcards"
+        ],
+        "operationId": "resetMyFlashcardDeck",
+        "summary": "Reset the authenticated learner's review state for one deck",
+        "description": "Returns every card in the deck to box 1, due immediately. Idempotent via the Idempotency-Key header.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/DeckId"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/FlashcardDeckReset"
+          },
+          "201": {
+            "$ref": "#/components/responses/FlashcardDeckReset"
+          },
+          "401": {
+            "$ref": "#/components/responses/SessionExpired"
+          },
+          "404": {
+            "$ref": "#/components/responses/FlashcardNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/FlashcardIdempotencyConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    },
+    "/me/wrong-answers": {
+      "get": {
+        "tags": ["Quiz"],
+        "operationId": "listMyWrongAnswers",
+        "summary": "List the authenticated learner's persistent wrong-answer review",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {"name": "page", "in": "query", "schema": {"type": "integer", "minimum": 1, "default": 1}},
+          {"name": "pageSize", "in": "query", "schema": {"type": "integer", "minimum": 1, "maximum": 100, "default": 20}},
+          {"name": "lessonId", "in": "query", "schema": {"$ref": "#/components/schemas/Uuid"}},
+          {"name": "quizId", "in": "query", "schema": {"$ref": "#/components/schemas/Uuid"}}
+        ],
+        "responses": {
+          "200": {"description": "Wrong-answer page", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/WrongAnswerPageEnvelope"}}}},
+          "401": {"$ref": "#/components/responses/SessionExpired"},
+          "422": {"$ref": "#/components/responses/ValidationError"}
+        }
+      }
+    },
+    "/me/boss-challenge": {
+      "get": {
+        "tags": ["Campaign"],
+        "operationId": "getMyActiveBossChallenge",
+        "summary": "Get the active server-owned boss challenge without answer keys",
+        "security": [{"bearerAuth": []}],
+        "responses": {
+          "200": {"description": "Active boss challenge", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/BossChallengeEnvelope"}}}},
+          "401": {"$ref": "#/components/responses/SessionExpired"},
+          "404": {"description": "No active boss challenge", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorEnvelope"}}}}
+        }
+      }
+    },
+    "/boss-attempts": {
+      "post": {
+        "tags": ["Campaign"],
+        "operationId": "submitBossAttempt",
+        "summary": "Submit an idempotent server-scored boss attempt",
+        "security": [{"bearerAuth": []}],
+        "parameters": [{"$ref": "#/components/parameters/IdempotencyKey"}],
+        "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/BossAttemptRequest"}}}},
+        "responses": {
+          "201": {"description": "Boss attempt accepted", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/BossAttemptResultEnvelope"}}}},
+          "200": {"description": "Equivalent attempt replay", "headers": {"X-Idempotent-Replay": {"$ref": "#/components/headers/IdempotentReplay"}}, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/BossAttemptResultEnvelope"}}}},
+          "401": {"$ref": "#/components/responses/SessionExpired"},
+          "409": {"description": "Conflict or unavailable challenge", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorEnvelope"}}}},
+          "422": {"$ref": "#/components/responses/ValidationError"}
+        }
+      }
+    },
+    "/me/economy": {
+      "get": {
+        "tags": ["Campaign"],
+        "operationId": "getMyEconomy",
+        "summary": "Get the learner's shell wallet, cosmetic catalog and inventory",
+        "security": [{"bearerAuth": []}],
+        "responses": {
+          "200": {"description": "Private economy projection", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/EconomyEnvelope"}}}},
+          "401": {"$ref": "#/components/responses/SessionExpired"}
+        }
+      }
+    },
+    "/me/shop-purchases": {
+      "post": {
+        "tags": ["Campaign"],
+        "operationId": "purchaseCosmeticItem",
+        "summary": "Purchase one cosmetic item with server-owned shells",
+        "security": [{"bearerAuth": []}],
+        "parameters": [{"$ref": "#/components/parameters/IdempotencyKey"}],
+        "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/PurchaseRequest"}}}},
+        "responses": {
+          "201": {"description": "Purchase accepted", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/PurchaseResultEnvelope"}}}},
+          "200": {"description": "Equivalent purchase replay", "headers": {"X-Idempotent-Replay": {"$ref": "#/components/headers/IdempotentReplay"}}, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/PurchaseResultEnvelope"}}}},
+          "401": {"$ref": "#/components/responses/SessionExpired"},
+          "404": {"description": "Shop item not found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorEnvelope"}}}},
+          "409": {"description": "Insufficient balance, owned item or idempotency conflict", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorEnvelope"}}}},
+          "422": {"$ref": "#/components/responses/ValidationError"}
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Short-lived access JWT supplied in the Authorization header."
+      }
+    },
+    "parameters": {
+      "ClientPlatform": {
+        "name": "X-Client-Platform",
+        "in": "header",
+        "required": true,
+        "description": "Determines refresh-token transport only: web uses a Secure HttpOnly cookie; android uses the documented JSON field and secure device storage.",
+        "schema": {
+          "type": "string",
+          "enum": [
+            "web",
+            "android"
+          ]
+        }
+      },
+      "IfMatch": {
+        "name": "If-Match",
+        "in": "header",
+        "required": true,
+        "description": "Opaque entity revision returned in the prior response ETag header.",
+        "schema": {
+          "$ref": "#/components/schemas/Revision"
+        }
+      },
+      "IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "description": "Client-generated UUIDv7 identifying one immutable mutation submission.",
+        "schema": {
+          "$ref": "#/components/schemas/Uuid"
+        }
+      },
+      "LessonIdQuery": {
+        "name": "lessonId",
+        "in": "query",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/Uuid"
+        }
+      },
+      "SubjectId": {
+        "name": "subjectId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/Uuid"
+        }
+      },
+      "TopicId": {
+        "name": "topicId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/Uuid"
+        }
+      },
+      "LessonId": {
+        "name": "lessonId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/Uuid"
+        }
+      },
+      "QuizId": {
+        "name": "quizId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/Uuid"
+        }
+      },
+      "DeckId": {
+        "name": "deckId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/Uuid"
+        }
+      },
+      "DeckIdQuery": {
+        "name": "deckId",
+        "in": "query",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/Uuid"
+        }
+      },
+      "DueOnlyQuery": {
+        "name": "dueOnly",
+        "in": "query",
+        "required": false,
+        "description": "When true (the default) only cards whose dueAt has passed are returned.",
+        "schema": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "QueueLimitQuery": {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 20
+        }
+      }
+    },
+    "headers": {
+      "RequestId": {
+        "description": "Server-generated request correlation ID. It is also present in the response meta or error body.",
+        "schema": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "ETag": {
+        "description": "Opaque revision token for conditional profile and settings updates.",
+        "schema": {
+          "$ref": "#/components/schemas/Revision"
+        }
+      },
+      "RefreshCookie": {
+        "description": "Web only: Set-Cookie refresh token with Secure, HttpOnly, SameSite=Lax, Path=/api/v1/auth, and an appropriate expiry. Never expose its value to JavaScript or logs.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "IdempotentReplay": {
+        "description": "Present and true when an idempotent attempt submission replays a prior accepted result.",
+        "schema": {
+          "type": "boolean",
+          "const": true
+        }
+      }
+    },
+    "responses": {
+      "AuthSessionCreated": {
+        "description": "Registered and authenticated.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          },
+          "Set-Cookie": {
+            "$ref": "#/components/headers/RefreshCookie"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/SessionEnvelope"
+            }
+          }
+        }
+      },
+      "AuthSession": {
+        "description": "Authenticated.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          },
+          "Set-Cookie": {
+            "$ref": "#/components/headers/RefreshCookie"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/SessionEnvelope"
+            }
+          }
+        }
+      },
+      "RefreshedSession": {
+        "description": "Refresh token rotated and a new access token issued.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          },
+          "Set-Cookie": {
+            "$ref": "#/components/headers/RefreshCookie"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/RefreshedSessionEnvelope"
+            }
+          }
+        }
+      },
+      "CurrentUser": {
+        "description": "Authenticated user identity.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UserEnvelope"
+            }
+          }
+        }
+      },
+      "Profile": {
+        "description": "Profile with current revision.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          },
+          "ETag": {
+            "$ref": "#/components/headers/ETag"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ProfileEnvelope"
+            }
+          }
+        }
+      },
+      "Settings": {
+        "description": "Shared settings with current revision.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          },
+          "ETag": {
+            "$ref": "#/components/headers/ETag"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/SettingsEnvelope"
+            }
+          }
+        }
+      },
+      "ProgressSummary": {
+        "description": "Server-derived progress projection.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ProgressEnvelope"
+            }
+          }
+        }
+      },
+      "Engagement": {
+        "description": "Server-derived engagement projection; no client-supplied awards or progress.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/EngagementEnvelope"
+            }
+          }
+        }
+      },
+      "Campaign": {
+        "description": "Private server-derived campaign projection over the active catalog.",
+        "headers": { "X-Request-Id": { "$ref": "#/components/headers/RequestId" } },
+        "content": { "application/json": {
+          "schema": { "$ref": "#/components/schemas/CampaignEnvelope" }
+        } }
+      },
+      "StreakRecoveryEligibility": {
+        "description": "Private server-derived streak-recovery eligibility.",
+        "headers": { "X-Request-Id": { "$ref": "#/components/headers/RequestId" } },
+        "content": { "application/json": {
+          "schema": { "$ref": "#/components/schemas/StreakRecoveryEligibilityEnvelope" },
+          "examples": {
+            "eligible": { "value": { "data": { "eligible": true, "missedLocalDate": "2026-03-09", "policyVersion": "streak-recovery-v1", "streak": 4 }, "meta": { "requestId": "req_example" } } },
+            "ineligible": { "value": { "data": { "eligible": false, "reasonCode": "prior_streak_too_short", "policyVersion": "streak-recovery-v1", "streak": 2 }, "meta": { "requestId": "req_example" } } }
+          }
+        } }
+      },
+      "StreakRecoveryClaimCreated": {
+        "description": "A private streak recovery was accepted without XP, mission, currency, item, ranking, or unlock reward.",
+        "headers": { "X-Request-Id": { "$ref": "#/components/headers/RequestId" } },
+        "content": { "application/json": {
+          "schema": { "$ref": "#/components/schemas/StreakRecoveryClaimEnvelope" },
+          "examples": { "accepted": { "value": { "data": { "status": "accepted", "missedLocalDate": "2026-03-09", "policyVersion": "streak-recovery-v1", "acceptedAt": "2026-03-10T12:00:00Z" }, "meta": { "requestId": "req_example" } } } }
+        } }
+      },
+      "StreakRecoveryClaimReplay": {
+        "description": "Idempotent replay of the original accepted private recovery claim.",
+        "headers": {
+          "X-Request-Id": { "$ref": "#/components/headers/RequestId" },
+          "X-Idempotent-Replay": { "$ref": "#/components/headers/IdempotentReplay" }
+        },
+        "content": { "application/json": {
+          "schema": { "$ref": "#/components/schemas/StreakRecoveryClaimEnvelope" },
+          "examples": { "replay": { "value": { "data": { "status": "accepted", "missedLocalDate": "2026-03-09", "policyVersion": "streak-recovery-v1", "acceptedAt": "2026-03-10T12:00:00Z" }, "meta": { "requestId": "req_example" } } } }
+        } }
+      },
+      "StreakRecoveryUnavailable": {
+        "description": "Streak recovery is not currently eligible. The error contains only a safe reason code.",
+        "headers": { "X-Request-Id": { "$ref": "#/components/headers/RequestId" } },
+        "content": { "application/json": {
+          "schema": { "$ref": "#/components/schemas/ErrorEnvelope" },
+          "examples": { "unavailable": { "value": { "error": { "code": "streak_recovery.ineligible", "message": "Streak recovery is not available.", "requestId": "req_example", "details": [{ "field": "recovery", "reason": "rolling_limit_reached" }] } } } }
+        } }
+      },
+      "LessonCompletions": {
+        "description": "The authenticated user's completed lessons, derived from accepted immutable learning events.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/LessonCompletionsEnvelope"
+            }
+          }
+        }
+      },
+      "Subjects": {
+        "description": "Active subjects in display order.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/SubjectsEnvelope"
+            }
+          }
+        }
+      },
+      "Subject": {
+        "description": "Active subject.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/SubjectEnvelope"
+            }
+          }
+        }
+      },
+      "Topics": {
+        "description": "Active topics in display order.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/TopicsEnvelope"
+            }
+          }
+        }
+      },
+      "Topic": {
+        "description": "Active topic.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/TopicEnvelope"
+            }
+          }
+        }
+      },
+      "Lessons": {
+        "description": "Active lessons in display order.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/LessonsEnvelope"
+            }
+          }
+        }
+      },
+      "Lesson": {
+        "description": "Active lesson.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/LessonEnvelope"
+            }
+          }
+        }
+      },
+      "LearningEventAccepted": {
+        "description": "A new immutable learning event was accepted and progress was projected.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/LearningEventEnvelope"
+            }
+          }
+        }
+      },
+      "LearningEventReplay": {
+        "description": "A retry of an equivalent accepted learning event. No duplicate progress was awarded.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          },
+          "X-Idempotent-Replay": {
+            "$ref": "#/components/headers/IdempotentReplay"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/LearningEventEnvelope"
+            }
+          }
+        }
+      },
+      "Quizzes": {
+        "description": "Active quizzes in display order for one active lesson.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/QuizzesEnvelope"
+            }
+          }
+        }
+      },
+      "Quiz": {
+        "description": "Active quiz detail without correct answer keys.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/QuizEnvelope"
+            }
+          }
+        }
+      },
+      "QuizAttemptAccepted": {
+        "description": "A new immutable quiz attempt was scored and accepted.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/QuizAttemptResultEnvelope"
+            }
+          }
+        }
+      },
+      "QuizAttemptReplay": {
+        "description": "A retry of an equivalent accepted quiz attempt. No duplicate attempt or award was created.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          },
+          "X-Idempotent-Replay": {
+            "$ref": "#/components/headers/IdempotentReplay"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/QuizAttemptResultEnvelope"
+            }
+          }
+        }
+      },
+      "QuizIdempotencyConflict": {
+        "description": "A quiz-attempt idempotency key was reused with a different payload.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "InvalidQuizAttempt": {
+        "description": "The submitted quiz attempt is semantically invalid.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "QuizNotFound": {
+        "description": "The requested active quiz or quiz lesson was not found.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "InvalidCredentials": {
+        "$ref": "#/components/responses/AuthError"
+      },
+      "EmailAlreadyRegistered": {
+        "$ref": "#/components/responses/AuthError"
+      },
+      "RefreshRejected": {
+        "$ref": "#/components/responses/AuthError"
+      },
+      "SessionExpired": {
+        "$ref": "#/components/responses/AuthError"
+      },
+      "AuthError": {
+        "description": "Authentication or session failure.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "ValidationError": {
+        "description": "Request validation failure.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "RevisionConflict": {
+        "description": "The resource changed after the caller read it.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "IdempotencyConflict": {
+        "description": "An idempotency key was reused with a different payload.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "InvalidLearningEvent": {
+        "description": "The submitted learning event is semantically invalid.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "LearningNotFound": {
+        "description": "The requested active learning resource was not found.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "RateLimited": {
+        "description": "Rate or quota limit exceeded.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "InternalError": {
+        "description": "Unexpected server failure without sensitive diagnostics.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "TutorResponseCreated": {
+        "description": "A new AI tutor response was generated and stored.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/TutorResponseEnvelope"
+            }
+          }
+        }
+      },
+      "TutorResponseReplay": {
+        "description": "A retry returned the previously stored tutor response.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          },
+          "X-Idempotent-Replay": {
+            "$ref": "#/components/headers/IdempotentReplay"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/TutorResponseEnvelope"
+            }
+          }
+        }
+      },
+      "TutorLessonNotFound": {
+        "description": "The lesson does not exist or is inactive.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "TutorIdempotencyConflict": {
+        "description": "The idempotency key was reused with a different payload.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "TutorProviderError": {
+        "description": "The AI provider returned an error.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "TutorTimeout": {
+        "description": "The AI provider did not respond in time.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "FlashcardDecks": {
+        "description": "Active flashcard decks in display order for one active lesson.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/FlashcardDecksEnvelope"
+            }
+          }
+        }
+      },
+      "FlashcardDeck": {
+        "description": "One active deck with its active cards in display order.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/FlashcardDeckEnvelope"
+            }
+          }
+        }
+      },
+      "FlashcardQueue": {
+        "description": "The authenticated learner's review queue, ordered by dueAt then displayOrder.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/FlashcardQueueEnvelope"
+            }
+          }
+        }
+      },
+      "FlashcardReviewAccepted": {
+        "description": "A new review was accepted and the schedule was recalculated.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/FlashcardReviewEnvelope"
+            }
+          }
+        }
+      },
+      "FlashcardReviewReplay": {
+        "description": "An equivalent review was already accepted for this idempotency key; the original result is replayed.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/FlashcardReviewEnvelope"
+            }
+          }
+        }
+      },
+      "FlashcardDeckReset": {
+        "description": "The learner's review state for this deck was reset.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/FlashcardDeckResetEnvelope"
+            }
+          }
+        }
+      },
+      "FlashcardNotFound": {
+        "description": "The deck or card does not exist or is inactive.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "InvalidFlashcardReview": {
+        "description": "The review payload is invalid, future-dated, or references a card outside the active catalog.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "FlashcardIdempotencyConflict": {
+        "description": "The idempotency key was reused with a different payload.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "Uuid": {
+        "type": "string",
+        "format": "uuid",
+        "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+        "description": "Lowercase UUIDv7 public identifier."
+      },
+      "Timestamp": {
+        "type": "string",
+        "format": "date-time",
+        "description": "RFC 3339 timestamp in UTC, for example 2026-07-20T08:00:00Z."
+      },
+      "Revision": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Opaque server-generated revision token."
+      },
+      "ResponseMeta": {
+        "type": "object",
+        "required": [
+          "requestId"
+        ],
+        "properties": {
+          "requestId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "ErrorDetail": {
+        "type": "object",
+        "required": [
+          "field",
+          "reason"
+        ],
+        "properties": {
+          "field": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ErrorBody": {
+        "type": "object",
+        "required": [
+          "code",
+          "message",
+          "requestId"
+        ],
+        "properties": {
+          "code": {
+            "$ref": "#/components/schemas/ErrorCode"
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1
+          },
+          "details": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            }
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "ErrorEnvelope": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/ErrorBody"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ErrorCode": {
+        "type": "string",
+        "enum": [
+          "validation.invalid_request",
+          "validation.invalid_field",
+          "auth.invalid_credentials",
+          "auth.email_already_registered",
+          "auth.session_expired",
+          "auth.session_revoked",
+          "auth.refresh_token_invalid",
+          "auth.refresh_token_reused",
+          "conflict.revision_mismatch",
+          "learning.invalid_attempt",
+          "learning.invalid_event",
+          "learning.unknown_lesson",
+          "learning.resource_not_found",
+          "learning.idempotency_key_reused",
+          "quiz.not_found",
+          "quiz.inactive",
+          "quiz.lesson_inactive",
+          "quiz.invalid_submission",
+          "quiz.question_not_found",
+          "quiz.option_not_found",
+          "quiz.duplicate_answer",
+          "quiz.incomplete_attempt",
+          "quiz.idempotency_key_reused",
+          "flashcard.deck_not_found",
+          "flashcard.card_not_found",
+          "flashcard.deck_inactive",
+          "flashcard.invalid_review",
+          "flashcard.idempotency_key_reused",
+          "ai.idempotency_key_reused",
+          "ai.provider_error",
+          "ai.timeout",
+          "streak_recovery.ineligible",
+          "rate_limit.exceeded",
+          "server.internal"
+        ]
+      },
+      "RegisterRequest": {
+        "type": "object",
+        "required": [
+          "displayName",
+          "email",
+          "password"
+        ],
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 320
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "minLength": 8,
+            "maxLength": 256
+          }
+        },
+        "additionalProperties": false
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 320
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "additionalProperties": false
+      },
+      "AndroidRefreshRequest": {
+        "type": "object",
+        "required": [
+          "refreshToken"
+        ],
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "User": {
+        "type": "object",
+        "required": [
+          "id",
+          "displayName",
+          "email",
+          "createdAt"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "createdAt": {
+            "$ref": "#/components/schemas/Timestamp"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Profile": {
+        "type": "object",
+        "required": [
+          "id",
+          "displayName",
+          "email",
+          "educationLevel",
+          "updatedAt",
+          "revision"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "readOnly": true
+          },
+          "avatarKey": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 80
+          },
+          "educationLevel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "beginner",
+              "intermediate",
+              "advanced",
+              null
+            ]
+          },
+          "updatedAt": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "revision": {
+            "$ref": "#/components/schemas/Revision"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateProfileRequest": {
+        "type": "object",
+        "minProperties": 1,
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "avatarKey": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 80
+          },
+          "educationLevel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "beginner",
+              "intermediate",
+              "advanced",
+              null
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "SharedSettings": {
+        "type": "object",
+        "required": [
+          "locale",
+          "dailyGoalTargetXp",
+          "timezone",
+          "updatedAt",
+          "revision"
+        ],
+        "properties": {
+          "locale": {
+            "type": "string",
+            "enum": [
+              "vi",
+              "en"
+            ]
+          },
+          "dailyGoalTargetXp": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000
+          },
+          "timezone": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Validated IANA timezone selected by the learner; defaults to Asia/Ho_Chi_Minh."
+          },
+          "updatedAt": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "revision": {
+            "$ref": "#/components/schemas/Revision"
+          }
+        },
+        "additionalProperties": false
+      },
+      "EngagementGoal": {
+        "type": "object",
+        "required": ["progress", "target", "completed"],
+        "properties": {
+          "progress": { "type": "integer", "minimum": 0 },
+          "target": { "type": "integer", "minimum": 1 },
+          "completed": { "type": "boolean" }
+        },
+        "additionalProperties": false
+      },
+      "DailyEngagementMission": {
+        "type": "object",
+        "required": ["startsAt", "endsAt", "templateKey", "objectives", "lesson", "quiz", "reviews", "completed"],
+        "properties": {
+          "startsAt": { "$ref": "#/components/schemas/Timestamp" },
+          "endsAt": { "$ref": "#/components/schemas/Timestamp" },
+          "templateKey": { "type": "string", "enum": ["daily_complete_lesson", "daily_quiz_attempt", "daily_review_five", "daily_learning_mix"] },
+          "objectives": { "type": "array", "minItems": 1, "maxItems": 2, "items": { "$ref": "#/components/schemas/EngagementGoal" } },
+          "lesson": { "$ref": "#/components/schemas/EngagementGoal" },
+          "quiz": { "$ref": "#/components/schemas/EngagementGoal" },
+          "reviews": { "$ref": "#/components/schemas/EngagementGoal" },
+          "completed": { "type": "boolean", "description": "True when any daily learning path is complete." }
+        },
+        "additionalProperties": false
+      },
+      "WeeklyEngagementMission": {
+        "type": "object",
+        "required": ["startsAt", "endsAt", "templateKey", "objectives", "actions", "days", "completed"],
+        "properties": {
+          "startsAt": { "$ref": "#/components/schemas/Timestamp" },
+          "endsAt": { "$ref": "#/components/schemas/Timestamp" },
+          "templateKey": { "type": "string", "enum": ["weekly_learning_momentum", "weekly_lessons_three", "weekly_quiz_and_review", "weekly_subject_exploration"] },
+          "objectives": { "type": "array", "minItems": 1, "maxItems": 2, "items": { "$ref": "#/components/schemas/EngagementGoal" } },
+          "actions": { "$ref": "#/components/schemas/EngagementGoal" },
+          "days": { "$ref": "#/components/schemas/EngagementGoal" },
+          "completed": { "type": "boolean" }
+        },
+        "additionalProperties": false
+      },
+      "CampaignLessonNode": {
+        "type": "object",
+        "required": ["lessonId", "slug", "title", "displayOrder", "completed", "state"],
+        "properties": {
+          "lessonId": { "$ref": "#/components/schemas/Uuid" },
+          "slug": { "type": "string", "minLength": 1 },
+          "title": { "type": "string", "minLength": 1 },
+          "displayOrder": { "type": "integer", "minimum": 1 },
+          "completed": { "type": "boolean" },
+          "state": { "type": "string", "enum": ["not_started", "recommended", "completed"] }
+        },
+        "additionalProperties": false
+      },
+      "CampaignTopicNode": {
+        "type": "object",
+        "required": ["topicId", "slug", "name", "displayOrder", "completedLessons", "totalLessons", "completionPercentage", "lessons"],
+        "properties": {
+          "topicId": { "$ref": "#/components/schemas/Uuid" },
+          "slug": { "type": "string", "minLength": 1 },
+          "name": { "type": "string", "minLength": 1 },
+          "displayOrder": { "type": "integer", "minimum": 1 },
+          "completedLessons": { "type": "integer", "minimum": 0 },
+          "totalLessons": { "type": "integer", "minimum": 0 },
+          "completionPercentage": { "type": "number", "minimum": 0, "maximum": 100 },
+          "lessons": { "type": "array", "items": { "$ref": "#/components/schemas/CampaignLessonNode" } }
+        },
+        "additionalProperties": false
+      },
+      "CampaignZone": {
+        "type": "object",
+        "required": ["subjectId", "slug", "name", "displayOrder", "state", "completedLessons", "totalLessons", "completionPercentage", "topics"],
+        "properties": {
+          "subjectId": { "$ref": "#/components/schemas/Uuid" },
+          "slug": { "type": "string", "minLength": 1 },
+          "name": { "type": "string", "minLength": 1 },
+          "displayOrder": { "type": "integer", "minimum": 1 },
+          "state": { "type": "string", "const": "active" },
+          "completedLessons": { "type": "integer", "minimum": 0 },
+          "totalLessons": { "type": "integer", "minimum": 0 },
+          "completionPercentage": { "type": "number", "minimum": 0, "maximum": 100 },
+          "topics": { "type": "array", "items": { "$ref": "#/components/schemas/CampaignTopicNode" } }
+        },
+        "additionalProperties": false
+      },
+      "CampaignProjection": {
+        "type": "object",
+        "required": ["campaignKey", "campaignVersion", "catalogVersion", "accessPolicy", "recommendedNodeId", "completedLessons", "totalLessons", "completionPercentage", "zones"],
+        "properties": {
+          "campaignKey": { "type": "string", "const": "core-learning-map" },
+          "campaignVersion": { "type": "string", "const": "campaign-v1" },
+          "catalogVersion": { "type": "string", "const": "catalog-v1" },
+          "accessPolicy": { "type": "string", "const": "open-guided" },
+          "recommendedNodeId": { "anyOf": [{ "$ref": "#/components/schemas/Uuid" }, { "type": "null" }] },
+          "completedLessons": { "type": "integer", "minimum": 0 },
+          "totalLessons": { "type": "integer", "minimum": 0 },
+          "completionPercentage": { "type": "number", "minimum": 0, "maximum": 100 },
+          "zones": { "type": "array", "items": { "$ref": "#/components/schemas/CampaignZone" } }
+        },
+        "additionalProperties": false
+      },
+      "CampaignEnvelope": {
+        "type": "object",
+        "required": ["data", "meta"],
+        "properties": {
+          "data": { "$ref": "#/components/schemas/CampaignProjection" },
+          "meta": { "$ref": "#/components/schemas/ResponseMeta" }
+        },
+        "additionalProperties": false
+      },
+      "EngagementProjection": {
+        "type": "object",
+        "description": "Backend-authoritative read model. XP is copied only from existing accepted first-time lesson awards.",
+        "required": ["totalXp", "level", "currentLevelXp", "nextLevelThreshold", "completionPercentage", "levelCurveVersion", "timezone", "streak", "achievements", "missions"],
+        "properties": {
+          "totalXp": { "type": "integer", "minimum": 0 },
+          "level": { "type": "integer", "minimum": 1 },
+          "currentLevelXp": { "type": "integer", "minimum": 0 },
+          "nextLevelThreshold": { "type": "integer", "minimum": 100 },
+          "completionPercentage": { "type": "number", "minimum": 0, "maximum": 100 },
+          "levelCurveVersion": { "type": "string", "const": "level-curve-v1" },
+          "timezone": { "type": "string", "minLength": 1, "maxLength": 64 },
+          "streak": { "type": "integer", "minimum": 0 },
+          "achievements": { "type": "array", "items": { "type": "string", "enum": ["first_lesson", "curious_learner", "quiz_explorer", "review_habit", "seven_day_learner"] }, "uniqueItems": true },
+          "missions": {
+            "type": "object",
+            "required": ["ruleVersion", "daily", "weekly"],
+            "properties": {
+              "ruleVersion": { "type": "string", "const": "engagement-v1" },
+              "daily": { "$ref": "#/components/schemas/DailyEngagementMission" },
+              "weekly": { "$ref": "#/components/schemas/WeeklyEngagementMission" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      "EngagementEnvelope": {
+        "type": "object",
+        "required": ["data", "meta"],
+        "properties": {
+          "data": { "$ref": "#/components/schemas/EngagementProjection" },
+          "meta": { "$ref": "#/components/schemas/ResponseMeta" }
+        },
+        "additionalProperties": false
+      },
+      "StreakRecoveryEligibilityProjection": {
+        "description": "Private, server-derived recovery eligibility. No qualifying action, source record, timezone history, XP, reward, or mission data is exposed.",
+        "oneOf": [
+          {
+            "type": "object",
+            "required": ["eligible", "missedLocalDate", "policyVersion", "streak"],
+            "properties": {
+              "eligible": { "const": true },
+              "missedLocalDate": { "type": "string", "format": "date" },
+              "policyVersion": { "type": "string", "const": "streak-recovery-v1" },
+              "streak": { "type": "integer", "minimum": 0 }
+            },
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "required": ["eligible", "reasonCode", "policyVersion", "streak"],
+            "properties": {
+              "eligible": { "const": false },
+              "reasonCode": { "type": "string", "enum": ["no_qualifying_evidence", "no_current_qualifying_action", "no_single_day_gap", "gap_exceeds_one_day", "prior_streak_too_short", "rolling_limit_reached", "missed_date_already_recovered", "adjacent_recovered_date", "timezone_effective_boundary"] },
+              "policyVersion": { "type": "string", "const": "streak-recovery-v1" },
+              "streak": { "type": "integer", "minimum": 0 }
+            },
+            "additionalProperties": false
+          }
+        ]
+      },
+      "StreakRecoveryClaimResult": {
+        "type": "object",
+        "required": ["status", "missedLocalDate", "policyVersion", "acceptedAt"],
+        "properties": {
+          "status": { "type": "string", "const": "accepted" },
+          "missedLocalDate": { "type": "string", "format": "date" },
+          "policyVersion": { "type": "string", "const": "streak-recovery-v1" },
+          "acceptedAt": { "$ref": "#/components/schemas/Timestamp" }
+        },
+        "additionalProperties": false
+      },
+      "StreakRecoveryEligibilityEnvelope": {
+        "type": "object",
+        "required": ["data", "meta"],
+        "properties": {
+          "data": { "$ref": "#/components/schemas/StreakRecoveryEligibilityProjection" },
+          "meta": { "$ref": "#/components/schemas/ResponseMeta" }
+        },
+        "additionalProperties": false
+      },
+      "StreakRecoveryClaimEnvelope": {
+        "type": "object",
+        "required": ["data", "meta"],
+        "properties": {
+          "data": { "$ref": "#/components/schemas/StreakRecoveryClaimResult" },
+          "meta": { "$ref": "#/components/schemas/ResponseMeta" }
+        },
+        "additionalProperties": false
+      },
+      "UpdateSettingsRequest": {
+        "type": "object",
+        "required": [
+          "locale",
+          "dailyGoalTargetXp"
+        ],
+        "properties": {
+          "locale": {
+            "type": "string",
+            "enum": [
+              "vi",
+              "en"
+            ]
+          },
+          "dailyGoalTargetXp": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000
+          },
+          "timezone": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Optional additive field. If omitted, the existing server-owned timezone is retained."
+          }
+        },
+        "additionalProperties": false
+      },
+      "Subject": {
+        "type": "object",
+        "required": [
+          "id",
+          "slug",
+          "name",
+          "displayOrder",
+          "active"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "slug": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "displayOrder": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "active": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Topic": {
+        "type": "object",
+        "required": [
+          "id",
+          "subjectId",
+          "slug",
+          "name",
+          "displayOrder",
+          "active"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "subjectId": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "slug": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "displayOrder": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "active": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Lesson": {
+        "type": "object",
+        "required": [
+          "id",
+          "topicId",
+          "slug",
+          "title",
+          "description",
+          "estimatedMinutes",
+          "difficulty",
+          "displayOrder",
+          "active"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "topicId": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "slug": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1
+          },
+          "estimatedMinutes": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 480
+          },
+          "difficulty": {
+            "type": "string",
+            "enum": [
+              "beginner",
+              "intermediate",
+              "advanced"
+            ]
+          },
+          "displayOrder": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "active": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "LearningEventRequest": {
+        "type": "object",
+        "required": [
+          "lessonId",
+          "occurredAt",
+          "durationSeconds",
+          "eventType"
+        ],
+        "properties": {
+          "lessonId": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "occurredAt": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "durationSeconds": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "eventType": {
+            "type": "string",
+            "const": "lesson.completed"
+          }
+        },
+        "additionalProperties": false
+      },
+      "LearningEvent": {
+        "type": "object",
+        "required": [
+          "id",
+          "userId",
+          "lessonId",
+          "occurredAt",
+          "xpEarned",
+          "durationSeconds",
+          "eventType",
+          "acceptedAt"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "userId": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "lessonId": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "occurredAt": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "xpEarned": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Server-derived XP award for the authoritative lesson. Clients must not calculate or claim this value."
+          },
+          "durationSeconds": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "eventType": {
+            "type": "string",
+            "const": "lesson.completed"
+          },
+          "acceptedAt": {
+            "$ref": "#/components/schemas/Timestamp"
+          }
+        },
+        "additionalProperties": false
+      },
+      "QuizSummary": {
+        "type": "object",
+        "required": [
+          "id",
+          "lessonId",
+          "title",
+          "description",
+          "questionCount",
+          "displayOrder",
+          "active"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "lessonId": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "questionCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "displayOrder": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "active": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "QuizAnswerOption": {
+        "type": "object",
+        "required": [
+          "id",
+          "text",
+          "displayOrder"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "displayOrder": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "additionalProperties": false
+      },
+      "QuizQuestion": {
+        "type": "object",
+        "required": [
+          "id",
+          "prompt",
+          "type",
+          "displayOrder",
+          "options"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "prompt": {
+            "type": "string",
+            "minLength": 1
+          },
+          "type": {
+            "type": "string",
+            "const": "single-choice"
+          },
+          "displayOrder": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QuizAnswerOption"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "QuizDetail": {
+        "type": "object",
+        "required": [
+          "id",
+          "lessonId",
+          "title",
+          "description",
+          "questionCount",
+          "displayOrder",
+          "active",
+          "questions"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "lessonId": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "questionCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "displayOrder": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "questions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QuizQuestion"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "QuizAttemptAnswerRequest": {
+        "type": "object",
+        "required": [
+          "questionId",
+          "selectedOptionId"
+        ],
+        "properties": {
+          "questionId": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "selectedOptionId": {
+            "$ref": "#/components/schemas/Uuid"
+          }
+        },
+        "additionalProperties": false
+      },
+      "QuizAttemptRequest": {
+        "type": "object",
+        "required": [
+          "quizId",
+          "answers"
+        ],
+        "properties": {
+          "quizId": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "answers": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/QuizAttemptAnswerRequest"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "QuizQuestionResult": {
+        "type": "object",
+        "required": [
+          "questionId",
+          "selectedOptionId",
+          "correct",
+          "correctOptionId"
+        ],
+        "properties": {
+          "questionId": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "selectedOptionId": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "correct": {
+            "type": "boolean"
+          },
+          "correctOptionId": {
+            "$ref": "#/components/schemas/Uuid"
+          }
+        },
+        "additionalProperties": false
+      },
+      "QuizAttemptResult": {
+        "type": "object",
+        "required": [
+          "attemptId",
+          "quizId",
+          "submittedAt",
+          "totalQuestions",
+          "correctAnswers",
+          "scorePercentage",
+          "questionResults"
+        ],
+        "properties": {
+          "attemptId": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "quizId": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "submittedAt": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "totalQuestions": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "correctAnswers": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "scorePercentage": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Server-computed percentage rounded to two decimal places."
+          },
+          "questionResults": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QuizQuestionResult"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProgressProjection": {
+        "type": "object",
+        "required": [
+          "completedLessons",
+          "totalLessons",
+          "completedTopics",
+          "totalTopics",
+          "completedSubjects",
+          "totalSubjects",
+          "totalXp",
+          "learningTimeSeconds",
+          "completionPercentage"
+        ],
+        "properties": {
+          "completedLessons": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "totalLessons": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "completedTopics": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "totalTopics": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "completedSubjects": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "totalSubjects": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "totalXp": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "learningTimeSeconds": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "completionPercentage": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          }
+        },
+        "additionalProperties": false
+      },
+      "LessonCompletion": {
+        "type": "object",
+        "required": [
+          "lessonId",
+          "completedAt"
+        ],
+        "properties": {
+          "lessonId": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "completedAt": {
+            "$ref": "#/components/schemas/Timestamp",
+            "description": "The occurredAt of the earliest accepted lesson.completed event for this lesson."
+          }
+        },
+        "additionalProperties": false
+      },
+      "Session": {
+        "type": "object",
+        "required": [
+          "user",
+          "accessToken",
+          "accessTokenExpiresAt"
+        ],
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "accessToken": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Bearer access token. Do not log or persist it in browser storage."
+          },
+          "accessTokenExpiresAt": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "refreshToken": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Android responses only. Store only in Keystore-backed encrypted device storage; never log. Web uses Set-Cookie instead."
+          },
+          "refreshTokenExpiresAt": {
+            "$ref": "#/components/schemas/Timestamp"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RefreshedSession": {
+        "type": "object",
+        "required": [
+          "accessToken",
+          "accessTokenExpiresAt"
+        ],
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "minLength": 1
+          },
+          "accessTokenExpiresAt": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "refreshToken": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Android responses only; absent for web."
+          },
+          "refreshTokenExpiresAt": {
+            "$ref": "#/components/schemas/Timestamp"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SessionEnvelope": {
+        "type": "object",
+        "required": [
+          "data",
+          "meta"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Session"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMeta"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RefreshedSessionEnvelope": {
+        "type": "object",
+        "required": [
+          "data",
+          "meta"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/RefreshedSession"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMeta"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UserEnvelope": {
+        "type": "object",
+        "required": [
+          "data",
+          "meta"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/User"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMeta"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProfileEnvelope": {
+        "type": "object",
+        "required": [
+          "data",
+          "meta"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Profile"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMeta"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SettingsEnvelope": {
+        "type": "object",
+        "required": [
+          "data",
+          "meta"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/SharedSettings"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMeta"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProgressEnvelope": {
+        "type": "object",
+        "required": [
+          "data",
+          "meta"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ProgressProjection"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMeta"
+          }
+        },
+        "additionalProperties": false
+      },
+      "LessonCompletionsEnvelope": {
+        "type": "object",
+        "required": [
+          "data",
+          "meta"
+        ],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LessonCompletion"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMeta"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SubjectEnvelope": {
+        "type": "object",
+        "required": [
+          "data",
+          "meta"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Subject"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMeta"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SubjectsEnvelope": {
+        "type": "object",
+        "required": [
+          "data",
+          "meta"
+        ],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Subject"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMeta"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TopicEnvelope": {
+        "type": "object",
+        "required": [
+          "data",
+          "meta"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Topic"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMeta"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TopicsEnvelope": {
+        "type": "object",
+        "required": [
+          "data",
+          "meta"
+        ],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Topic"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMeta"
+          }
+        },
+        "additionalProperties": false
+      },
+      "LessonEnvelope": {
+        "type": "object",
+        "required": [
+          "data",
+          "meta"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Lesson"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMeta"
+          }
+        },
+        "additionalProperties": false
+      },
+      "LessonsEnvelope": {
+        "type": "object",
+        "required": [
+          "data",
+          "meta"
+        ],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Lesson"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMeta"
+          }
+        },
+        "additionalProperties": false
+      },
+      "LearningEventSubmission": {
+        "type": "object",
+        "required": [
+          "event",
+          "progress"
+        ],
+        "properties": {
+          "event": {
+            "$ref": "#/components/schemas/LearningEvent"
+          },
+          "progress": {
+            "$ref": "#/components/schemas/ProgressProjection"
+          }
+        },
+        "additionalProperties": false
+      },
+      "LearningEventEnvelope": {
+        "type": "object",
+        "required": [
+          "data",
+          "meta"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/LearningEventSubmission"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMeta"
+          }
+        },
+        "additionalProperties": false
+      },
+      "QuizzesEnvelope": {
+        "type": "object",
+        "required": [
+          "data",
+          "meta"
+        ],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QuizSummary"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMeta"
+          }
+        },
+        "additionalProperties": false
+      },
+      "QuizEnvelope": {
+        "type": "object",
+        "required": [
+          "data",
+          "meta"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/QuizDetail"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMeta"
+          }
+        },
+        "additionalProperties": false
+      },
+      "QuizAttemptResultEnvelope": {
+        "type": "object",
+        "required": [
+          "data",
+          "meta"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/QuizAttemptResult"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMeta"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TutorResponseRequest": {
+        "type": "object",
+        "required": [
+          "lessonId",
+          "message"
+        ],
+        "properties": {
+          "lessonId": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          }
+        },
+        "additionalProperties": false
+      },
+      "TutorResponse": {
+        "type": "object",
+        "required": [
+          "responseId",
+          "lessonId",
+          "answer",
+          "createdAt",
+          "status"
+        ],
+        "properties": {
+          "responseId": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "lessonId": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "answer": {
+            "type": "string",
+            "minLength": 1
+          },
+          "createdAt": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "completed",
+              "truncated",
+              "refused"
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "TutorResponseEnvelope": {
+        "type": "object",
+        "required": [
+          "data",
+          "meta"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/TutorResponse"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMeta"
+          }
+        },
+        "additionalProperties": false
+      },
+      "FlashcardDeck": {
+        "type": "object",
+        "required": [
+          "id",
+          "lessonId",
+          "slug",
+          "name",
+          "description",
+          "cardCount",
+          "displayOrder",
+          "active"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "lessonId": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "slug": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "cardCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "displayOrder": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "active": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Flashcard": {
+        "type": "object",
+        "required": [
+          "id",
+          "deckId",
+          "front",
+          "back",
+          "displayOrder",
+          "active"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "deckId": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "front": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "back": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "hint": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500
+          },
+          "displayOrder": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "active": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "FlashcardDeckDetail": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/FlashcardDeck"
+          },
+          {
+            "type": "object",
+            "required": [
+              "cards"
+            ],
+            "properties": {
+              "cards": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Flashcard"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "FlashcardReviewState": {
+        "type": "object",
+        "description": "Server-derived review state. Clients must not calculate or claim these values.",
+        "required": [
+          "cardId",
+          "box",
+          "dueAt",
+          "lastReviewedAt",
+          "totalReviews",
+          "knownReviews",
+          "algorithmVersion"
+        ],
+        "properties": {
+          "cardId": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "box": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5,
+            "description": "Leitner box. 1 is new, 5 is fully learned."
+          },
+          "dueAt": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "lastReviewedAt": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Timestamp"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "totalReviews": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "knownReviews": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "algorithmVersion": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Scheduling algorithm that produced this state, e.g. leitner-5box-v1. Backend-owned; clients display it only for diagnostics."
+          }
+        },
+        "additionalProperties": false
+      },
+      "FlashcardQueueEntry": {
+        "type": "object",
+        "required": [
+          "card",
+          "state"
+        ],
+        "properties": {
+          "card": {
+            "$ref": "#/components/schemas/Flashcard"
+          },
+          "state": {
+            "$ref": "#/components/schemas/FlashcardReviewState"
+          }
+        },
+        "additionalProperties": false
+      },
+      "FlashcardReviewRequest": {
+        "type": "object",
+        "description": "Clients submit only what happened. Box, due date and mastery are server-derived and forbidden here.",
+        "required": [
+          "cardId",
+          "outcome",
+          "reviewedAt"
+        ],
+        "properties": {
+          "cardId": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "known",
+              "forgot"
+            ],
+            "description": "Extensible: additional grades may be added without a breaking change."
+          },
+          "reviewedAt": {
+            "$ref": "#/components/schemas/Timestamp"
+          }
+        },
+        "additionalProperties": false
+      },
+      "FlashcardReviewResult": {
+        "type": "object",
+        "required": [
+          "reviewId",
+          "state",
+          "acceptedAt"
+        ],
+        "properties": {
+          "reviewId": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "state": {
+            "$ref": "#/components/schemas/FlashcardReviewState"
+          },
+          "acceptedAt": {
+            "$ref": "#/components/schemas/Timestamp"
+          }
+        },
+        "additionalProperties": false
+      },
+      "FlashcardDeckResetResult": {
+        "type": "object",
+        "required": [
+          "deckId",
+          "cardsReset",
+          "resetAt"
+        ],
+        "properties": {
+          "deckId": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "cardsReset": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "resetAt": {
+            "$ref": "#/components/schemas/Timestamp"
+          }
+        },
+        "additionalProperties": false
+      },
+      "FlashcardDecksEnvelope": {
+        "type": "object",
+        "required": [
+          "data",
+          "meta"
+        ],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FlashcardDeck"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMeta"
+          }
+        },
+        "additionalProperties": false
+      },
+      "FlashcardDeckEnvelope": {
+        "type": "object",
+        "required": [
+          "data",
+          "meta"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/FlashcardDeckDetail"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMeta"
+          }
+        },
+        "additionalProperties": false
+      },
+      "FlashcardQueueEnvelope": {
+        "type": "object",
+        "required": [
+          "data",
+          "meta"
+        ],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FlashcardQueueEntry"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMeta"
+          }
+        },
+        "additionalProperties": false
+      },
+      "FlashcardReviewEnvelope": {
+        "type": "object",
+        "required": [
+          "data",
+          "meta"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/FlashcardReviewResult"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMeta"
+          }
+        },
+        "additionalProperties": false
+      },
+      "FlashcardDeckResetEnvelope": {
+        "type": "object",
+        "required": [
+          "data",
+          "meta"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/FlashcardDeckResetResult"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ResponseMeta"
+          }
+        },
+        "additionalProperties": false
+      },
+      "WrongAnswer": {
+        "type": "object",
+        "required": ["questionId", "quizId", "quizTitle", "lessonId", "prompt", "selectedOptionId", "selectedOptionText", "correctOptionId", "correctOptionText", "lastAnsweredAt", "wrongCount"],
+        "properties": {
+          "questionId": {"$ref": "#/components/schemas/Uuid"},
+          "quizId": {"$ref": "#/components/schemas/Uuid"},
+          "quizTitle": {"type": "string"},
+          "lessonId": {"$ref": "#/components/schemas/Uuid"},
+          "prompt": {"type": "string"},
+          "selectedOptionId": {"$ref": "#/components/schemas/Uuid"},
+          "selectedOptionText": {"type": "string"},
+          "correctOptionId": {"$ref": "#/components/schemas/Uuid"},
+          "correctOptionText": {"type": "string"},
+          "lastAnsweredAt": {"$ref": "#/components/schemas/Timestamp"},
+          "wrongCount": {"type": "integer", "minimum": 1}
+        },
+        "additionalProperties": false
+      },
+      "WrongAnswerPage": {
+        "type": "object",
+        "required": ["items", "page", "pageSize", "totalItems", "hasNext"],
+        "properties": {
+          "items": {"type": "array", "items": {"$ref": "#/components/schemas/WrongAnswer"}},
+          "page": {"type": "integer", "minimum": 1},
+          "pageSize": {"type": "integer", "minimum": 1, "maximum": 100},
+          "totalItems": {"type": "integer", "minimum": 0},
+          "hasNext": {"type": "boolean"}
+        },
+        "additionalProperties": false
+      },
+      "WrongAnswerPageEnvelope": {
+        "type": "object",
+        "required": ["data", "meta"],
+        "properties": {"data": {"$ref": "#/components/schemas/WrongAnswerPage"}, "meta": {"$ref": "#/components/schemas/ResponseMeta"}},
+        "additionalProperties": false
+      },
+      "BossOption": {
+        "type": "object",
+        "required": ["id", "text", "displayOrder"],
+        "properties": {"id": {"$ref": "#/components/schemas/Uuid"}, "text": {"type": "string"}, "displayOrder": {"type": "integer", "minimum": 0}},
+        "additionalProperties": false
+      },
+      "BossQuestion": {
+        "type": "object",
+        "required": ["id", "prompt", "displayOrder", "options"],
+        "properties": {
+          "id": {"$ref": "#/components/schemas/Uuid"},
+          "prompt": {"type": "string"},
+          "displayOrder": {"type": "integer", "minimum": 0},
+          "options": {"type": "array", "minItems": 2, "items": {"$ref": "#/components/schemas/BossOption"}}
+        },
+        "additionalProperties": false
+      },
+      "BossChallenge": {
+        "type": "object",
+        "required": ["id", "zoneId", "title", "description", "questionCount", "passingPercentage", "rewardShells", "available", "questions"],
+        "properties": {
+          "id": {"$ref": "#/components/schemas/Uuid"},
+          "zoneId": {"$ref": "#/components/schemas/Uuid"},
+          "title": {"type": "string"},
+          "description": {"type": ["string", "null"]},
+          "questionCount": {"type": "integer", "minimum": 1},
+          "passingPercentage": {"type": "number", "minimum": 1, "maximum": 100},
+          "rewardShells": {"type": "integer", "minimum": 0},
+          "available": {"type": "boolean"},
+          "questions": {"type": "array", "minItems": 1, "items": {"$ref": "#/components/schemas/BossQuestion"}}
+        },
+        "additionalProperties": false
+      },
+      "BossChallengeEnvelope": {
+        "type": "object",
+        "required": ["data", "meta"],
+        "properties": {"data": {"$ref": "#/components/schemas/BossChallenge"}, "meta": {"$ref": "#/components/schemas/ResponseMeta"}},
+        "additionalProperties": false
+      },
+      "BossAnswerRequest": {
+        "type": "object",
+        "required": ["questionId", "selectedOptionId"],
+        "properties": {"questionId": {"$ref": "#/components/schemas/Uuid"}, "selectedOptionId": {"$ref": "#/components/schemas/Uuid"}},
+        "additionalProperties": false
+      },
+      "BossAttemptRequest": {
+        "type": "object",
+        "required": ["challengeId", "answers"],
+        "properties": {
+          "challengeId": {"$ref": "#/components/schemas/Uuid"},
+          "answers": {"type": "array", "minItems": 1, "items": {"$ref": "#/components/schemas/BossAnswerRequest"}}
+        },
+        "additionalProperties": false
+      },
+      "BossAttemptResult": {
+        "type": "object",
+        "required": ["attemptId", "challengeId", "submittedAt", "totalQuestions", "correctAnswers", "scorePercentage", "passed", "rewardShells", "walletBalance"],
+        "properties": {
+          "attemptId": {"$ref": "#/components/schemas/Uuid"},
+          "challengeId": {"$ref": "#/components/schemas/Uuid"},
+          "submittedAt": {"$ref": "#/components/schemas/Timestamp"},
+          "totalQuestions": {"type": "integer", "minimum": 1},
+          "correctAnswers": {"type": "integer", "minimum": 0},
+          "scorePercentage": {"type": "number", "minimum": 0, "maximum": 100},
+          "passed": {"type": "boolean"},
+          "rewardShells": {"type": "integer", "minimum": 0},
+          "walletBalance": {"type": "integer", "minimum": 0}
+        },
+        "additionalProperties": false
+      },
+      "BossAttemptResultEnvelope": {
+        "type": "object",
+        "required": ["data", "meta"],
+        "properties": {"data": {"$ref": "#/components/schemas/BossAttemptResult"}, "meta": {"$ref": "#/components/schemas/ResponseMeta"}},
+        "additionalProperties": false
+      },
+      "ShopItem": {
+        "type": "object",
+        "required": ["id", "name", "description", "priceShells", "available", "owned"],
+        "properties": {
+          "id": {"$ref": "#/components/schemas/Uuid"},
+          "name": {"type": "string"},
+          "description": {"type": ["string", "null"]},
+          "priceShells": {"type": "integer", "minimum": 1},
+          "available": {"type": "boolean"},
+          "owned": {"type": "boolean"}
+        },
+        "additionalProperties": false
+      },
+      "InventoryItem": {
+        "type": "object",
+        "required": ["itemId", "quantity", "equipped"],
+        "properties": {
+          "itemId": {"$ref": "#/components/schemas/Uuid"},
+          "quantity": {"type": "integer", "minimum": 1},
+          "equipped": {"type": "boolean"}
+        },
+        "additionalProperties": false
+      },
+      "EconomyProjection": {
+        "type": "object",
+        "required": ["currency", "balance", "shopItems", "inventory"],
+        "properties": {
+          "currency": {"type": "string", "enum": ["shell"]},
+          "balance": {"type": "integer", "minimum": 0},
+          "shopItems": {"type": "array", "items": {"$ref": "#/components/schemas/ShopItem"}},
+          "inventory": {"type": "array", "items": {"$ref": "#/components/schemas/InventoryItem"}}
+        },
+        "additionalProperties": false
+      },
+      "EconomyEnvelope": {
+        "type": "object",
+        "required": ["data", "meta"],
+        "properties": {"data": {"$ref": "#/components/schemas/EconomyProjection"}, "meta": {"$ref": "#/components/schemas/ResponseMeta"}},
+        "additionalProperties": false
+      },
+      "PurchaseRequest": {
+        "type": "object",
+        "required": ["itemId"],
+        "properties": {"itemId": {"$ref": "#/components/schemas/Uuid"}},
+        "additionalProperties": false
+      },
+      "PurchaseResult": {
+        "type": "object",
+        "required": ["purchaseId", "itemId", "priceShells", "balance", "inventoryQuantity", "purchasedAt"],
+        "properties": {
+          "purchaseId": {"$ref": "#/components/schemas/Uuid"},
+          "itemId": {"$ref": "#/components/schemas/Uuid"},
+          "priceShells": {"type": "integer", "minimum": 1},
+          "balance": {"type": "integer", "minimum": 0},
+          "inventoryQuantity": {"type": "integer", "minimum": 1},
+          "purchasedAt": {"$ref": "#/components/schemas/Timestamp"}
+        },
+        "additionalProperties": false
+      },
+      "PurchaseResultEnvelope": {
+        "type": "object",
+        "required": ["data", "meta"],
+        "properties": {"data": {"$ref": "#/components/schemas/PurchaseResult"}, "meta": {"$ref": "#/components/schemas/ResponseMeta"}},
+        "additionalProperties": false
+      }
+    }
+  }
+}

@@ -23,6 +23,11 @@ class CatalogDaoTest {
             ApplicationProvider.getApplicationContext(),
             StudyMentorDatabase::class.java,
         ).allowMainThreadQueries().build()
+        // Foreign keys are enforced by the Room schema, but the cache is a
+        // disposable view of the backend — the authority guarantees
+        // referential integrity, so these constraints add no protection and
+        // would force every Room-backed test to replicate the full hierarchy.
+        database.openHelper.writableDatabase.execSQL("PRAGMA foreign_keys = OFF")
         dao = database.catalogDao()
     }
 

@@ -59,6 +59,7 @@ class LessonCompletionTest {
             ApplicationProvider.getApplicationContext(),
             StudyMentorDatabase::class.java,
         ).allowMainThreadQueries().build()
+        database.openHelper.writableDatabase.execSQL("PRAGMA foreign_keys = OFF")
 
         // The screen loads its lesson first, then checks the backend's own
         // completion read model for it (empty here: nothing completed yet).

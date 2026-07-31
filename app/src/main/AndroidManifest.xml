@@ -3,12 +3,6 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
-    <!--
-      Required from Android 13 to post the daily study reminder. It is requested
-      at the moment the user turns reminders on, not at launch, so the prompt
-      arrives with its reason visible.
-    -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
@@ -23,16 +17,107 @@
         android:theme="@style/Theme.StudyMentor"
         android:usesCleartextTraffic="false">
 
+        <!-- Phase 4 Java Activities -->
+
+        <!-- Splash -->
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.splash.SplashActivity"
             android:exported="true"
-            android:theme="@style/Theme.StudyMentor"
-            android:windowSoftInputMode="adjustResize">
+            android:theme="@style/Theme.StudyMentor">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Onboarding -->
+        <activity
+            android:name=".ui.onboarding.OnboardingActivity"
+            android:exported="false"
+            android:theme="@style/Theme.StudyMentor" />
+
+        <!-- Auth / Forgot Password -->
+        <activity
+            android:name=".ui.auth.AuthActivity"
+            android:exported="false"
+            android:theme="@style/Theme.StudyMentor"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".ui.forgotpassword.ForgotPasswordActivity"
+            android:exported="false"
+            android:theme="@style/Theme.StudyMentor" />
+
+        <!-- Main shell with bottom nav -->
+        <activity
+            android:name=".ui.main.MainActivity"
+            android:exported="false"
+            android:theme="@style/Theme.StudyMentor"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- Lesson detail -->
+        <activity
+            android:name=".ui.lesson.LessonDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.StudyMentor" />
+
+        <!-- Topics (transient wrapper) -->
+        <activity
+            android:name=".ui.learning.TopicsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.StudyMentor" />
+
+        <!-- Quiz -->
+        <activity
+            android:name=".ui.quiz.QuizListActivity"
+            android:exported="false"
+            android:theme="@style/Theme.StudyMentor" />
+
+        <activity
+            android:name=".ui.quiz.QuizAttemptActivity"
+            android:exported="false"
+            android:theme="@style/Theme.StudyMentor" />
+
+        <activity
+            android:name=".ui.quiz.WrongAnswerActivity"
+            android:exported="false"
+            android:theme="@style/Theme.StudyMentor" />
+
+        <!-- Flashcard -->
+        <activity
+            android:name=".ui.flashcards.FlashcardListActivity"
+            android:exported="false"
+            android:theme="@style/Theme.StudyMentor" />
+
+        <activity
+            android:name=".ui.flashcards.FlashcardReviewActivity"
+            android:exported="false"
+            android:theme="@style/Theme.StudyMentor" />
+
+        <!-- Tutor Chat -->
+        <activity
+            android:name=".ui.tutor.TutorChatActivity"
+            android:exported="false"
+            android:theme="@style/Theme.StudyMentor"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- Campaign Map -->
+        <activity
+            android:name=".ui.campaign.CampaignMapActivity"
+            android:exported="false"
+            android:theme="@style/Theme.StudyMentor" />
+
+        <activity
+            android:name=".ui.campaign.BossChallengeActivity"
+            android:exported="false"
+            android:theme="@style/Theme.StudyMentor" />
+
+        <activity
+            android:name=".ui.campaign.EconomyActivity"
+            android:exported="false"
+            android:theme="@style/Theme.StudyMentor" />
+
+        <!-- Original MainActivity (Compose) — kept for Phase 5 comparison -->
     </application>
 
 </manifest>

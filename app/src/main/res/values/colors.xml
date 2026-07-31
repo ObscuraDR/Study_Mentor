@@ -2,4 +2,48 @@
 <resources>
     <!-- Mirrors the canonical Web primary token (design-system/foundations/colors.ts). -->
     <color name="ic_launcher_background">#1F4E79</color>
+
+    <!-- Ocean palette — ported verbatim from Color.kt Palette object -->
+    <color name="primary_base">#1F4E79</color>
+    <color name="primary_strong">#0A2A47</color>
+    <color name="primary_subtle">#3D86C6</color>
+    <color name="primary_container">#D6E6F7</color>
+    <color name="on_primary_container">#0A2A47</color>
+
+    <color name="secondary_base">#00B4D8</color>
+    <color name="secondary_strong">#0077B6</color>
+    <color name="secondary_subtle">#90E0EF</color>
+    <color name="secondary_container">#CAF0F8</color>
+
+    <color name="tertiary_base">#FF6B6B</color>
+    <color name="tertiary_container">#FFE0E0</color>
+
+    <!-- Feedback colors -->
+    <color name="feedback_success">#147A43</color>
+    <color name="feedback_success_bg">#E3F9ED</color>
+    <color name="feedback_warning">#9A5B00</color>
+    <color name="feedback_error">#C62828</color>
+    <color name="feedback_error_bg">#FDECEC</color>
+    <color name="feedback_info">#1B6CA8</color>
+
+    <!-- Light surface colors -->
+    <color name="light_canvas">#F8F9FA</color>
+    <color name="light_surface">#FFFFFF</color>
+    <color name="light_surface_variant">#F0F4F8</color>
+    <color name="light_text_primary">#1C1C1E</color>
+    <color name="light_text_secondary">#595959</color>
+    <color name="light_outline">#767F8C</color>
+    <color name="light_outline_variant">#D0D7DE</color>
+
+    <!-- Dark surface colors -->
+    <color name="dark_canvas">#0D1117</color>
+    <color name="dark_surface">#161B22</color>
+    <color name="dark_surface_variant">#1C2333</color>
+    <color name="dark_text_primary">#E6EDF3</color>
+    <color name="dark_text_secondary">#8B949E</color>
+    <color name="dark_outline">#30363D</color>
+    <color name="dark_outline_variant">#21262D</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
 </resources>

@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        style="@style/TextAppearance.TitleMedium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:accessibilityHeading="true"
+        android:text="@string/engagement_heading"
+        android:textColor="?android:attr/textColorPrimary" />
+
+    <ProgressBar
+        android:id="@+id/engagement_loading"
+        android:layout_width="@dimen/touch_button"
+        android:layout_height="@dimen/touch_button"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/spacing_md"
+        android:contentDescription="@string/state_loading" />
+
+    <LinearLayout
+        android:id="@+id/engagement_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <com.google.android.material.card.MaterialCardView
+            style="@style/StudyMentorCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_sm"
+            app:cardElevation="2dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/engagement_level"
+                        style="@style/TextAppearance.TitleMedium"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="?android:attr/textColorPrimary" />
+
+                    <TextView
+                        android:id="@+id/engagement_streak"
+                        style="@style/TextAppearance.TitleMedium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/primary_base" />
+                </LinearLayout>
+
+                <ProgressBar
+                    android:id="@+id/engagement_level_progress"
+                    style="?android:progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/completion_bar_height"
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:max="1000" />
+
+                <TextView
+                    android:id="@+id/engagement_xp"
+                    style="@style/TextAppearance.LabelMedium"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:textColor="@color/light_text_secondary" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            style="@style/TextAppearance.TitleMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_md"
+            android:text="@string/engagement_daily_mission_heading"
+            android:textColor="?android:attr/textColorPrimary" />
+
+        <TextView
+            android:id="@+id/daily_mission"
+            style="@style/TextAppearance.BodyMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:textColor="@color/light_text_secondary" />
+
+        <ProgressBar
+            android:id="@+id/daily_mission_progress"
+            style="?android:progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/completion_bar_height"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:max="1000" />
+
+        <TextView
+            style="@style/TextAppearance.TitleMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_md"
+            android:text="@string/engagement_weekly_mission_heading"
+            android:textColor="?android:attr/textColorPrimary" />
+
+        <TextView
+            android:id="@+id/weekly_mission"
+            style="@style/TextAppearance.BodyMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:textColor="@color/light_text_secondary" />
+
+        <ProgressBar
+            android:id="@+id/weekly_mission_progress"
+            style="?android:progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/completion_bar_height"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:max="1000" />
+
+        <TextView
+            style="@style/TextAppearance.TitleMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_md"
+            android:text="@string/engagement_achievements_heading"
+            android:textColor="?android:attr/textColorPrimary" />
+
+        <TextView
+            android:id="@+id/engagement_achievements"
+            style="@style/TextAppearance.BodyMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:textColor="@color/light_text_secondary" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/engagement_error"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_sm"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            style="@style/TextAppearance.BodyMedium"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/error_generic_body"
+            android:textColor="@color/light_text_secondary" />
+
+        <Button
+            android:id="@+id/engagement_retry"
+            style="@style/StudyMentorButton.Outlined"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/touch_button"
+            android:text="@string/action_retry" />
+    </LinearLayout>
+
+    <com.google.android.material.card.MaterialCardView
+        style="@style/StudyMentorCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_md"
+        app:cardElevation="1dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/TextAppearance.TitleMedium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/engagement_recovery_heading"
+                android:textColor="?android:attr/textColorPrimary" />
+
+            <TextView
+                android:id="@+id/recovery_message"
+                style="@style/TextAppearance.BodyMedium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xs"
+                android:text="@string/engagement_recovery_loading"
+                android:textColor="@color/light_text_secondary" />
+
+            <Button
+                android:id="@+id/recovery_action"
+                style="@style/StudyMentorButton.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/touch_button"
+                android:layout_marginTop="@dimen/spacing_sm"
+                android:text="@string/engagement_recovery_action"
+                android:visibility="gone" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <Button
+        android:id="@+id/open_wrong_answers"
+        style="@style/StudyMentorButton.Outlined"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/touch_button"
+        android:layout_marginTop="@dimen/spacing_md"
+        android:text="@string/wrong_answer_title" />
+
+    <Button
+        android:id="@+id/open_campaign"
+        style="@style/StudyMentorButton.Outlined"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/touch_button"
+        android:layout_marginTop="@dimen/spacing_sm"
+        android:text="@string/campaign_entry" />
+</LinearLayout>

@@ -51,6 +51,7 @@ class CatalogViewModelTest {
             ApplicationProvider.getApplicationContext(),
             StudyMentorDatabase::class.java,
         ).allowMainThreadQueries().build()
+        database.openHelper.writableDatabase.execSQL("PRAGMA foreign_keys = OFF")
         val timeSource = fixedTimeSource
         repository = CatalogRepository(
             catalogApi = harness.catalogApi,

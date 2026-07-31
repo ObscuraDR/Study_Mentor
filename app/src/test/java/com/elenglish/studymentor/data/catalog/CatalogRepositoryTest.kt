@@ -44,6 +44,10 @@ class CatalogRepositoryTest {
             ApplicationProvider.getApplicationContext(),
             StudyMentorDatabase::class.java,
         ).allowMainThreadQueries().build()
+        // The cache is a disposable view of the backend; referential integrity
+        // is the backend's responsibility. Disable FK enforcement so tests can
+        // seed individual cache rows without replicating the full hierarchy.
+        database.openHelper.writableDatabase.execSQL("PRAGMA foreign_keys = OFF")
 
         repository = CatalogRepository(
             catalogApi = harness.catalogApi,
@@ -62,6 +66,17 @@ class CatalogRepositoryTest {
 
     /** Makes the backend unreachable, which surfaces as ApiError.Network. */
     private fun enqueueNetworkFailure() = harness.goOffline()
+
+    /**
+     * A time source whose clock can be advanced by tests to simulate cache aging.
+     * Its initial value matches [fixedTime] so the existing assertions still hold.
+     */
+    private class MutableTimeSource(
+        private var currentMillis: Long = 1_700_000_000_000,
+    ) : TimeSource {
+        override fun nowEpochMillis(): Long = currentMillis
+        fun advanceBy(millis: Long) { currentMillis += millis }
+    }
 
     @Test
     fun `a live read is marked live and keeps the backend order exactly`() = runTest {
@@ -238,6 +253,63 @@ class CatalogRepositoryTest {
         val result = repository.getLesson("missing")
 
         assertTrue(result is ApiResult.Failure)
+    }
+
+    @Test
+    fun `a stale cache older than 24 hours is not used as a fallback`() = runTest {
+        val mutableClock = MutableTimeSource()
+        val staleRepository = CatalogRepository(
+            catalogApi = harness.catalogApi,
+            catalogDao = database.catalogDao(),
+            cacheMetadataDao = database.cacheMetadataDao(),
+            json = harness.json,
+            timeSource = mutableClock,
+        )
+
+        // Seed the cache.
+        harness.server.enqueue(
+            MockResponse().setResponseCode(200)
+                .setBody(Fixtures.subjects(Triple("s-1", "Grammar", 0))),
+        )
+        staleRepository.getSubjects()
+
+        // Advance past the TTL threshold.
+        mutableClock.advanceBy(24L * 60 * 60 * 1000 + 1)
+
+        enqueueNetworkFailure()
+        val result = staleRepository.getSubjects()
+
+        // Cache is too old — the network error is surfaced instead.
+        assertTrue(result is ApiResult.Failure)
+        assertTrue((result as ApiResult.Failure).error is ApiError.Network)
+    }
+
+    @Test
+    fun `a cache within TTL is still returned as a fallback when offline`() = runTest {
+        val mutableClock = MutableTimeSource()
+        val staleRepository = CatalogRepository(
+            catalogApi = harness.catalogApi,
+            catalogDao = database.catalogDao(),
+            cacheMetadataDao = database.cacheMetadataDao(),
+            json = harness.json,
+            timeSource = mutableClock,
+        )
+
+        harness.server.enqueue(
+            MockResponse().setResponseCode(200)
+                .setBody(Fixtures.subjects(Triple("s-1", "Grammar", 0))),
+        )
+        staleRepository.getSubjects()
+
+        // Advance just shy of 24 hours — cache should still be fresh.
+        mutableClock.advanceBy((24L * 60 * 60 * 1000) - 1L)
+
+        enqueueNetworkFailure()
+        val result = staleRepository.getSubjects()
+
+        val data = (result as ApiResult.Success).value
+        assertEquals(DataOrigin.Cached, data.origin)
+        assertEquals(listOf("Grammar"), data.value.map { it.name })
     }
 
     @Test

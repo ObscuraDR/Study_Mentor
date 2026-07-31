@@ -2,6 +2,7 @@ package com.elenglish.studymentor.ui.quiz
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.elenglish.studymentor.core.network.ApiResult
 import com.elenglish.studymentor.data.quiz.QuizRepository
@@ -41,6 +42,9 @@ class QuizListViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow<QuizListUiState>(QuizListUiState.Loading)
     val uiState: StateFlow<QuizListUiState> = _uiState.asStateFlow()
+
+    /** Java-friendly LiveData. */
+    val uiStateLiveData by lazy { _uiState.asLiveData() }
 
     init {
         load()
@@ -117,6 +121,9 @@ class QuizAttemptViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow<QuizUiState>(QuizUiState.Loading)
     val uiState: StateFlow<QuizUiState> = _uiState.asStateFlow()
+
+    /** Java-friendly LiveData. */
+    val uiStateLiveData by lazy { _uiState.asLiveData() }
 
     /** Held so a retry resends the identical key and answer list. */
     private var pendingAttempt: PendingQuizAttempt? = null

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="@dimen/spacing_md">
+
+    <TextView
+        style="@style/TextAppearance.HeadlineMedium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:accessibilityHeading="true"
+        android:text="@string/wrong_answer_title"
+        android:textColor="?android:attr/textColorPrimary" />
+
+    <TextView
+        android:id="@+id/wrong_summary"
+        style="@style/TextAppearance.BodyMedium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_xs"
+        android:text="@string/wrong_answer_subtitle"
+        android:textColor="@color/light_text_secondary" />
+
+    <ProgressBar
+        android:id="@+id/wrong_loading"
+        android:layout_width="@dimen/touch_button"
+        android:layout_height="@dimen/touch_button"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/spacing_lg"
+        android:contentDescription="@string/state_loading" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/wrong_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/spacing_md"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/wrong_empty"
+        style="@style/TextAppearance.BodyLarge"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/wrong_answer_empty"
+        android:textColor="@color/light_text_secondary"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/wrong_error"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            style="@style/TextAppearance.BodyLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/error_generic_body"
+            android:textColor="?android:attr/textColorPrimary" />
+
+        <TextView
+            android:id="@+id/wrong_error_reference"
+            style="@style/TextAppearance.LabelMedium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:textColor="@color/light_text_secondary"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/wrong_retry"
+            style="@style/StudyMentorButton.Outlined"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/touch_button"
+            android:layout_marginTop="@dimen/spacing_md"
+            android:text="@string/action_retry" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/wrong_load_more"
+        style="@style/StudyMentorButton.Outlined"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/touch_button"
+        android:text="@string/action_load_more"
+        android:visibility="gone" />
+</LinearLayout>

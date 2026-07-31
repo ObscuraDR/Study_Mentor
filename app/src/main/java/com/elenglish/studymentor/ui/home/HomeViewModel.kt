@@ -1,8 +1,10 @@
 package com.elenglish.studymentor.ui.home
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.elenglish.studymentor.core.network.ApiResult
+import com.elenglish.studymentor.data.account.AccountRepository
 import com.elenglish.studymentor.data.catalog.CatalogRepository
 import com.elenglish.studymentor.data.flashcard.FlashcardRepository
 import com.elenglish.studymentor.data.learning.LearningRepository
@@ -69,6 +71,8 @@ data class HomeUiState(
     val progress: ProgressSectionState = ProgressSectionState.Loading,
     val continueLearning: ContinueLearningState = ContinueLearningState.Loading,
     val flashcardsDue: FlashcardsDueState = FlashcardsDueState.Loading,
+    /** The display name read from the profile cache, so the greeting is personal. */
+    val displayName: String? = null,
 )
 
 /**
@@ -86,12 +90,21 @@ class HomeViewModel @Inject constructor(
     private val learningRepository: LearningRepository,
     private val catalogRepository: CatalogRepository,
     private val flashcardRepository: FlashcardRepository,
+    private val accountRepository: AccountRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
+    /** Java-friendly LiveData. */
+    val uiStateLiveData by lazy { _uiState.asLiveData() }
+
     init {
+        // The user's display name comes from the profile cache when it is
+        // available. If the Profile tab hasn't been opened yet this session and
+        // nothing is cached, the greeting falls back to generic wording — an
+        // honest placeholder, not a fabricated name.
+        _uiState.update { it.copy(displayName = accountRepository.getCachedProfile()?.displayName) }
         loadProgress()
         loadContinueLearning()
     }

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/greeting_section"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/greeting_title"
+        style="@style/TextAppearance.HeadlineMedium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="?android:attr/textColorPrimary"
+        android:accessibilityHeading="true"
+        android:text="@string/home_greeting_returning" />
+
+    <TextView
+        android:id="@+id/greeting_subtitle"
+        style="@style/TextAppearance.BodyLarge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_xs"
+        android:textColor="@color/light_text_secondary"
+        android:text="@string/home_subtitle_returning" />
+
+</LinearLayout>

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_md">
+
+        <TextView
+            style="@style/TextAppearance.HeadlineMedium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:accessibilityHeading="true"
+            android:text="@string/campaign_title"
+            android:textColor="?android:attr/textColorPrimary" />
+
+        <TextView
+            style="@style/TextAppearance.BodyMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_sm"
+            android:text="@string/campaign_guidance"
+            android:textColor="@color/light_text_secondary" />
+
+        <ProgressBar
+            android:id="@+id/campaign_progress_bar"
+            style="?android:progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/completion_bar_height"
+            android:layout_marginTop="@dimen/spacing_md"
+            android:max="100" />
+
+        <TextView
+            android:id="@+id/campaign_progress_text"
+            style="@style/TextAppearance.BodyMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:textColor="@color/light_text_secondary" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_md"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/open_boss_challenge"
+                style="@style/StudyMentorButton.Outlined"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/touch_button"
+                android:layout_weight="1"
+                android:text="@string/boss_title" />
+
+            <Button
+                android:id="@+id/open_economy"
+                style="@style/StudyMentorButton.Outlined"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/touch_button"
+                android:layout_marginStart="@dimen/spacing_sm"
+                android:layout_weight="1"
+                android:text="@string/economy_title" />
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/campaign_loading"
+            android:layout_width="@dimen/touch_button"
+            android:layout_height="@dimen/touch_button"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/spacing_md"
+            android:contentDescription="@string/state_loading" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/campaign_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_md"
+            android:nestedScrollingEnabled="false"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/empty_campaign"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_lg"
+            android:visibility="gone">
+
+            <TextView
+                style="@style/TextAppearance.TitleMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/campaign_empty_title"
+                android:textColor="?android:attr/textColorPrimary" />
+
+            <TextView
+                style="@style/TextAppearance.BodyMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_sm"
+                android:gravity="center"
+                android:text="@string/campaign_empty_body"
+                android:textColor="@color/light_text_secondary" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/campaign_error"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_lg"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                style="@style/TextAppearance.BodyLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/error_generic_body"
+                android:textColor="?android:attr/textColorPrimary" />
+
+            <Button
+                android:id="@+id/campaign_retry"
+                style="@style/StudyMentorButton.Outlined"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/touch_button"
+                android:layout_marginTop="@dimen/spacing_sm"
+                android:text="@string/action_retry" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
